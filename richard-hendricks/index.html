@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Richard Hendricks - Middle-Out Compression Platform</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 100, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 100, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+            animation: gridScroll 20s linear infinite;
+        }
+
+        @keyframes gridScroll {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back {
+            display: inline-block;
+            color: #444;
+            text-decoration: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            margin-bottom: 20px;
+            transition: color 0.2s;
+        }
+        .back:hover { color: #5090ff; }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #5090ff, #6ab0ff, #3070cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: #666;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .tagline span { color: #5090ff; }
+
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 12px;
+            padding: 4px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover { color: #aaa; }
+        .tab-btn.active {
+            background: rgba(80,144,255,0.1);
+            color: #5090ff;
+        }
+
+        .panel {
+            display: none;
+            background: linear-gradient(145deg, rgba(15,15,15,0.95), rgba(8,8,8,0.98));
+            border: 1px solid rgba(80,144,255,0.08);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .panel.active { display: block; }
+
+        .panel h2 {
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .panel .desc {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 12px;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            border-color: rgba(80,144,255,0.3);
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid rgba(80,144,255,0.2);
+            background: rgba(80,144,255,0.08);
+            color: #5090ff;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: rgba(80,144,255,0.15);
+            border-color: rgba(80,144,255,0.4);
+        }
+
+        .btn.green {
+            border-color: rgba(0,255,136,0.2);
+            background: rgba(0,255,136,0.08);
+            color: #00ff88;
+        }
+        .btn.green:hover {
+            background: rgba(0,255,136,0.15);
+            border-color: rgba(0,255,136,0.4);
+        }
+
+        .btn.orange {
+            border-color: rgba(255,180,50,0.2);
+            background: rgba(255,180,50,0.08);
+            color: #ffb432;
+        }
+        .btn.orange:hover {
+            background: rgba(255,180,50,0.15);
+            border-color: rgba(255,180,50,0.4);
+        }
+
+        .output-box {
+            margin-top: 15px;
+            padding: 16px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 8px;
+            min-height: 60px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #aaa;
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+
+        .output-box .stats-line {
+            color: #555;
+            font-size: 0.7rem;
+        }
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .module-item {
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: #666;
+            transition: all 0.2s;
+            line-height: 1.5;
+        }
+
+        .module-item:hover {
+            border-color: rgba(80,144,255,0.15);
+            color: #aaa;
+        }
+
+        .module-item strong {
+            color: #5090ff;
+            font-size: 0.85rem;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .stat-box {
+            padding: 14px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box .num {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            color: #5090ff;
+        }
+
+        .stat-box .label {
+            font-size: 0.65rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .input-row { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: 1fr; }
+            .logo { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <div class="container">
+        <a href="../index.html" class="back">← PiedPiper Hub</a>
+
+        <header>
+            <div class="logo">☰ RICHARD HENDRICKS</div>
+            <div class="tagline"><span>Middle-Out</span> Compression Platform · Data · Image · Audio · Video</div>
+        </header>
+
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="huffman">Huffman</button>
+            <button class="tab-btn" data-tab="arithmetic">Arithmetic</button>
+            <button class="tab-btn" data-tab="bwt-rle">BWT + RLE</button>
+            <button class="tab-btn" data-tab="jpeg">JPEG</button>
+            <button class="tab-btn" data-tab="kmeans">K-means</button>
+            <button class="tab-btn" data-tab="pbic">PBIC</button>
+            <button class="tab-btn" data-tab="overview">Overview</button>
+        </div>
+
+        <!-- Overview Panel -->
+        <div class="panel active" id="panel-overview">
+            <h2>📦 Richard Hendricks — Middle-Out Compression Platform</h2>
+            <div class="desc">
+                Named after Richard Hendricks, Pied Piper's founder and creator of the Middle-Out compression algorithm. This suite integrates all compression modules from the PiedPiper project into a unified web toolkit.
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="num">3</div>
+                    <div class="label">Text/Data Algorithms</div>
+                </div>
+                <div class="stat-box">
+                    <div class="num">3</div>
+                    <div class="label">Image Algorithms</div>
+                </div>
+                <div class="stat-box">
+                    <div class="num">2</div>
+                    <div class="label">Analysis Papers</div>
+                </div>
+            </div>
+
+            <div class="module-grid">
+                <div class="module-item"><strong>Huffman Static</strong><br>Optimal prefix coding. Builds a frequency tree, assigns shortest codes to most frequent symbols. O(n log n) tree construction.</div>
+                <div class="module-item"><strong>Huffman Adaptive</strong><br>Dynamic Huffman coding. Updates tree in real-time as data streams. No two-pass requirement.</div>
+                <div class="module-item"><strong>Arithmetic Coding</strong><br>Fractional bit encoding. Maps entire message to a single number in [0,1). Superior compression ratios vs Huffman.</div>
+                <div class="module-item"><strong>BWT + RLE</strong><br>Burrows-Wheeler Transform + Run-Length Encoding. BWT groups similar characters, RLE compresses runs.</div>
+                <div class="module-item"><strong>JPEG Compression</strong><br>Discrete Cosine Transform + quantization. Chroma subsampling, zigzag scanning, Huffman coding of coefficients.</div>
+                <div class="module-item"><strong>K-means Compression</strong><br>Color quantization via K-means clustering. Reduces color palette to K colors, maps each pixel to nearest centroid.</div>
+                <div class="module-item"><strong>PBIC</strong><br>Patch-Based Image Compression. Divides image into patches, finds similar patches, encodes differences.</div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 16px; background: rgba(80,144,255,0.05); border: 1px solid rgba(80,144,255,0.1); border-radius: 8px;">
+                <p style="color: #5090ff; font-family: 'Space Mono', monospace; font-size: 0.8rem;">
+                    ⚡ Based on compression research by Varul Srivastava, Ashwin Mittal, Shivang Gupta, Akshett Rai Jindal, Keshav Bansal, Zishan Kazi
+                </p>
+                <p style="color: #555; font-size: 0.75rem; margin-top: 8px;">
+                    Source implementations: Compression/Huffman · Compression/Arithmetic · Compression/Add-ons (BWT/RLE) · Image Compression/JPEG · Image Compression/K-means · Image Compression/PBIC
+                </p>
+            </div>
+        </div>
+
+        <!-- Huffman Panel -->
+        <div class="panel" id="panel-huffman">
+            <h2>Huffman Static Coding</h2>
+            <div class="desc">Optimal prefix code. Builds a min-heap priority queue from character frequencies, constructs a binary tree, assigns unique binary codes where most frequent characters get shortest codes.</div>
+            <textarea id="huffmanInput" placeholder="Enter text to compress...">Pied Piper Middle-Out Compression Platform</textarea>
+            <div style="display:flex;gap:8px;">
+                <button class="btn" onclick="huffmanCompress()">📦 Compress</button>
+                <button class="btn green" onclick="huffmanDecompress()">📋 Decompress</button>
+            </div>
+            <div class="output-box" id="huffmanOutput">Click Compress or Decompress</div>
+        </div>
+
+        <!-- Arithmetic Panel -->
+        <div class="panel" id="panel-arithmetic">
+            <h2>Arithmetic Coding</h2>
+            <div class="desc">Fractional bit encoding. Assigns a sub-interval of [0,1) to each symbol proportional to frequency. Encodes entire message as a single floating-point number in the final interval.</div>
+            <textarea id="arithInput" placeholder="Enter text to compress...">PiedPiper - Universal Computer</textarea>
+            <div style="display:flex;gap:8px;">
+                <button class="btn" onclick="arithCompress()">📦 Compress</button>
+                <button class="btn green" onclick="arithDecompress()">📋 Decompress</button>
+            </div>
+            <div class="output-box" id="arithOutput">Click Compress or Decompress</div>
+        </div>
+
+        <!-- BWT + RLE Panel -->
+        <div class="panel" id="panel-bwt-rle">
+            <h2>Burrows-Wheeler Transform + RLE</h2>
+            <div class="desc">BWT reorders characters to group identical characters. RLE then compresses runs. BWT is reversible, used in bzip2. Combined with Move-to-Front transform for better RLE.</div>
+            <textarea id="bwtInput" placeholder="Enter text to transform...">BANANABANANABANANA</textarea>
+            <div style="display:flex;gap:8px;">
+                <button class="btn" onclick="bwtTransform()">🔄 BWT Transform</button>
+                <button class="btn green" onclick="bwtInverse()">↩ BWT Inverse</button>
+                <button class="btn orange" onclick="bwtRleCompress()">📦 BWT + RLE Compress</button>
+            </div>
+            <div class="output-box" id="bwtOutput">Click BWT Transform, Inverse, or BWT+RLE Compress</div>
+        </div>
+
+        <!-- JPEG Panel -->
+        <div class="panel" id="panel-jpeg">
+            <h2>JPEG-like Compression</h2>
+            <div class="desc">Discrete Cosine Transform (DCT) on 8x8 blocks, quantization with quality factor, zigzag scanning, run-length encoding. Chroma subsampling for color images.</div>
+            <div class="input-row">
+                <input type="text" id="jpegInput" placeholder="Comma-separated 8x8 block values (64 nums)" value="52,55,61,66,70,61,64,73,63,59,55,90,109,85,69,72,62,59,68,113,144,104,66,73,63,58,71,122,154,106,70,69,67,61,68,104,126,88,68,70,79,65,60,70,77,68,58,75,85,71,64,59,55,61,65,83,87,79,69,68,65,76,78,94">
+                <div>
+                    <label style="font-size:0.7rem;color:#555;font-family:'Space Mono',monospace;">Quality (1-100): <span id="jpegQualityVal">50</span></label>
+                    <input type="range" id="jpegQuality" min="1" max="100" value="50" style="width:100%;">
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+                <button class="btn" onclick="jpegCompress()">📦 DCT Compress</button>
+                <button class="btn green" onclick="jpegDecompress()">📋 DCT Decompress</button>
+            </div>
+            <div class="output-box" id="jpegOutput">Click DCT Compress or Decompress</div>
+        </div>
+
+        <!-- K-means Panel -->
+        <div class="panel" id="panel-kmeans">
+            <h2>K-means Color Quantization</h2>
+            <div class="desc">K-means clustering for color palette reduction. Groups similar pixel colors into K clusters. Each pixel is replaced by its nearest centroid. Tunable K value for compression ratio.</div>
+            <div class="input-row">
+                <input type="text" id="kmeansInput" placeholder="Enter pixel values (r,g,b space-separated)" value="255,0,0 0,255,0 0,0,255 128,128,128 200,50,50 50,200,50 50,50,200 100,100,100">
+                <div>
+                    <label style="font-size:0.7rem;color:#555;font-family:'Space Mono',monospace;">K (clusters): <span id="kmeansKVal">3</span></label>
+                    <input type="range" id="kmeansK" min="2" max="16" value="3" style="width:100%;">
+                </div>
+            </div>
+            <button class="btn" onclick="kmeansCompress()">🎨 Quantize Colors</button>
+            <div class="output-box" id="kmeansOutput">Click Quantize Colors</div>
+        </div>
+
+        <!-- PBIC Panel -->
+        <div class="panel" id="panel-pbic">
+            <h2>Patch-Based Image Compression</h2>
+            <div class="desc">PBIC divides an image into overlapping patches, finds similar patches within a search window, encodes the difference between patches. Efficient for textures and repeated patterns.</div>
+            <input type="text" id="pbicInput" placeholder="Enter patch values (comma-separated)" value="10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160">
+            <div class="input-row">
+                <div>
+                    <label style="font-size:0.7rem;color:#555;font-family:'Space Mono',monospace;">Patch Size: <span id="pbicPatchVal">4</span></label>
+                    <input type="range" id="pbicPatch" min="2" max="8" value="4" style="width:100%;">
+                </div>
+                <div>
+                    <label style="font-size:0.7rem;color:#555;font-family:'Space Mono',monospace;">Similarity Threshold: <span id="pbicThreshVal">5</span></label>
+                    <input type="range" id="pbicThresh" min="1" max="20" value="5" style="width:100%;">
+                </div>
+            </div>
+            <button class="btn" onclick="pbicCompress()">📦 PBIC Compress</button>
+            <div class="output-box" id="pbicOutput">Click PBIC Compress</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // HUFFMAN STATIC CODING
+        // ============================================================
+        class HuffmanNode {
+            constructor(char, freq) {
+                this.char = char;
+                this.freq = freq;
+                this.left = null;
+                this.right = null;
+            }
+        }
+
+        function buildHuffmanTree(text) {
+            let freq = {};
+            for (let c of text) {
+                freq[c] = (freq[c] || 0) + 1;
+            }
+
+            let nodes = [];
+            for (let c in freq) {
+                nodes.push(new HuffmanNode(c, freq[c]));
+            }
+
+            while (nodes.length > 1) {
+                nodes.sort((a, b) => a.freq - b.freq);
+                let left = nodes.shift();
+                let right = nodes.shift();
+                let parent = new HuffmanNode(null, left.freq + right.freq);
+                parent.left = left;
+                parent.right = right;
+                nodes.push(parent);
+            }
+
+            return nodes[0];
+        }
+
+        function buildHuffmanCodes(node, prefix = '', codes = {}) {
+            if (!node) return codes;
+            if (node.char !== null) {
+                codes[node.char] = prefix || '0';
+            }
+            buildHuffmanCodes(node.left, prefix + '0', codes);
+            buildHuffmanCodes(node.right, prefix + '1', codes);
+            return codes;
+        }
+
+        function huffmanCompress() {
+            let input = document.getElementById('huffmanInput').value;
+            if (!input) {
+                document.getElementById('huffmanOutput').textContent = 'Error: Enter text to compress';
+                return;
+            }
+
+            let tree = buildHuffmanTree(input);
+            let codes = buildHuffmanCodes(tree);
+
+            let originalBits = input.length * 8;
+            let compressedBits = 0;
+            for (let c of input) {
+                compressedBits += codes[c].length;
+            }
+
+            // Build encoded binary string
+            let encoded = '';
+            for (let c of input) {
+                encoded += codes[c];
+            }
+
+            // Show code table
+            let codeTable = '';
+            let sorted = Object.entries(codes).sort((a, b) => a[1].length - b[1].length);
+            for (let [char, code] of sorted) {
+                let display = char === ' ' ? '␣' : char === '\n' ? '⏎' : char;
+                codeTable += `${display}: ${code}  `;
+            }
+
+            let ratio = ((1 - compressedBits / originalBits) * 100).toFixed(1);
+
+            document.getElementById('huffmanOutput').innerHTML = 
+                `<span style="color:#5090ff;">📊 Huffman Compression</span>\n` +
+                `<span class="stats-line">Original: ${originalBits} bits → Compressed: ${compressedBits} bits</span>\n` +
+                `<span class="stats-line">Compression Ratio: ${ratio}% | Codes: ${Object.keys(codes).length}</span>\n\n` +
+                `<span style="color:#aaa;">Code Table:</span>\n${codeTable}\n\n` +
+                `<span style="color:#aaa;">Encoded Bitstream (${encoded.length} bits):</span>\n${encoded.substring(0, 200)}${encoded.length > 200 ? '...' : ''}`;
+        }
+
+        function huffmanDecompress() {
+            document.getElementById('huffmanOutput').innerHTML = 
+                `Huffman decompression requires the encoded bitstream and code table.\n` +
+                `Enter a space-separated encoded bitstream in the input field to decompress.\n\n` +
+                `Example: Compress a message first to see the code table.`;
+        }
+
+        // ============================================================
+        // ARITHMETIC CODING
+        // ============================================================
+        function arithCompress() {
+            let input = document.getElementById('arithInput').value;
+            if (!input) {
+                document.getElementById('arithOutput').textContent = 'Error: Enter text to compress';
+                return;
+            }
+
+            // Build frequency model
+            let freq = {};
+            for (let c of input) freq[c] = (freq[c] || 0) + 1;
+            let total = input.length;
+
+            // Compute cumulative probabilities
+            let chars = Object.keys(freq).sort();
+            let cumProb = {};
+            let cum = 0;
+            for (let c of chars) {
+                cumProb[c] = { low: cum, high: cum + freq[c] / total };
+                cum += freq[c] / total;
+            }
+
+            // Encode: narrow interval [low, high) based on each symbol
+            let low = 0, high = 1;
+            for (let c of input) {
+                let range = high - low;
+                high = low + range * cumProb[c].high;
+                low = low + range * cumProb[c].low;
+            }
+
+            // Output a number in [low, high)
+            let encoded = (low + high) / 2;
+            let originalBits = input.length * 8;
+            let compressedBits = Math.ceil(-Math.log2(high - low));
+            let ratio = ((1 - compressedBits / originalBits) * 100).toFixed(1);
+
+            document.getElementById('arithOutput').innerHTML = 
+                `<span style="color:#5090ff;">📊 Arithmetic Coding</span>\n` +
+                `<span class="stats-line">Original: ${originalBits} bits → Compressed: ~${compressedBits} bits</span>\n` +
+                `<span class="stats-line">Compression Ratio: ${ratio}%</span>\n\n` +
+                `<span style="color:#aaa;">Encoded Value:</span>\n${encoded}\n\n` +
+                `<span style="color:#aaa;">Final Interval: [${low}, ${high})</span>\n\n` +
+                `<span style="color:#aaa;">Frequency Model (${chars.length} symbols):</span>\n` +
+                chars.map(c => {
+                    let d = c === ' ' ? '␣' : c === '\n' ? '⏎' : c;
+                    return `${d}: ${((freq[c]/total)*100).toFixed(1)}%`;
+                }).join('  `);
+        }
+
+        function arithDecompress() {
+            document.getElementById('arithOutput').innerHTML =
+                `Arithmetic decompression requires the encoded value and the frequency model.\n` +
+                `The encoded value is a number in [0,1) that maps back to the original message\n` +
+                `by repeatedly narrowing the interval using the frequency model.`;
+        }
+
+        // ============================================================
+        // BURROWS-WHEELER TRANSFORM + RLE
+        // ============================================================
+        function bwtTransform() {
+            let input = document.getElementById('bwtInput').value;
+            if (!input) {
+                document.getElementById('bwtOutput').textContent = 'Error: Enter text to transform';
+                return;
+            }
+
+            // BWT: add sentinel, create rotations, sort, take last column
+            let s = input + '\0';
+            let rotations = [];
+            for (let i = 0; i < s.length; i++) {
+                rotations.push(s.slice(i) + s.slice(0, i));
+            }
+            rotations.sort();
+            let bwt = rotations.map(r => r[r.length - 1]).join('');
+
+            // RLE: run-length encode the BWT output
+            let rle = '';
+            let count = 1;
+            for (let i = 1; i <= bwt.length; i++) {
+                if (i < bwt.length && bwt[i] === bwt[i-1]) {
+                    count++;
+                } else {
+                    let c = bwt[i-1] === '\0' ? '␀' : bwt[i-1] === ' ' ? '␣' : bwt[i-1];
+                    rle += `${c}${count > 1 ? count : ''}`;
+                    count = 1;
+                }
+            }
+
+            let originalSize = new Blob([input]).size;
+            let bwtSize = bwt.length;
+            let rleSize = rle.length;
+
+            document.getElementById('bwtOutput').innerHTML = 
+                `<span style="color:#5090ff;">🔄 Burrows-Wheeler Transform</span>\n` +
+                `<span class="stats-line">Original (${originalSize} bytes): "${input}"</span>\n\n` +
+                `<span style="color:#aaa;">BWT Output (${bwtSize} chars):</span>\n${bwt}\n\n` +
+                `<span style="color:#5090ff;">📦 Run-Length Encoded (${rleSize} chars):</span>\n${rle}\n\n` +
+                `<span class="stats-line">Compression: ${((1 - rleSize/bwtSize)*100).toFixed(1)}% reduction after RLE</span>`;
+        }
+
+        function bwtInverse() {
+            let input = document.getElementById('bwtInput').value;
+            // Reverse BWT: reconstruct original from last column
+            let l = input.length;
+            // Create table with first column = sorted last column
+            let table = [];
+            for (let i = 0; i < l; i++) {
+                table[i] = [input[i], ''];
+            }
+            for (let i = 0; i < l - 1; i++) {
+                table.sort((a, b) => {
+                    let aStr = a[0] + a[1];
+                    let bStr = b[0] + b[1];
+                    return aStr < bStr ? -1 : aStr > bStr ? 1 : 0;
+                });
+                for (let j = 0; j < l; j++) {
+                    table[j][1] = table[j][0] + table[j][1].substring(0, l - 1);
+                }
+            }
+
+            // Find row ending with sentinel
+            let result = '';
+            for (let i = 0; i < l; i++) {
+                let candidate = table[i][0] + table[i][1];
+                if (candidate[l-1] === '\0') {
+                    result = candidate.slice(0, -1);
+                    break;
+                }
+            }
+
+            document.getElementById('bwtOutput').innerHTML = 
+                `<span style="color:#00ff88;">↩ BWT Inverse</span>\n` +
+                `<span style="color:#aaa;">Reconstructed: "${result || '(requires null-sentinel terminated BWT)'}"</span>`;
+        }
+
+        function bwtRleCompress() {
+            let input = document.getElementById('bwtInput').value;
+            if (!input) {
+                document.getElementById('bwtOutput').textContent = 'Error: Enter text to compress';
+                return;
+            }
+
+            // BWT
+            let s = input + '\0';
+            let rotations = [];
+            for (let i = 0; i < s.length; i++) {
+                rotations.push(s.slice(i) + s.slice(0, i));
+            }
+            rotations.sort();
+            let bwt = rotations.map(r => r[r.length - 1]).join('');
+
+            // MTF (Move-to-Front) for better RLE
+            let alphabet = [...new Set(bwt)].sort();
+            let mtf = [];
+            let list = [...alphabet];
+            for (let c of bwt) {
+                let idx = list.indexOf(c);
+                mtf.push(idx);
+                list.splice(idx, 1);
+                list.unshift(c);
+            }
+
+            // RLE on MTF output
+            let rle = '';
+            let count = 1;
+            for (let i = 1; i <= mtf.length; i++) {
+                if (i < mtf.length && mtf[i] === mtf[i-1]) {
+                    count++;
+                } else {
+                    if (mtf[i-1] === 0 && count > 1) {
+                        rle += `0{${count}}`;
+                    } else if (mtf[i-1] === 0) {
+                        rle += '0';
+                    } else {
+                        rle += `${mtf[i-1]}${count > 1 ? `{${count}}` : ''}`;
+                    }
+                    count = 1;
+                }
+            }
+
+            let origBytes = input.length * 8;
+            let compressedBytes = rle.length * 4;
+            let ratio = ((1 - compressedBytes / origBytes) * 100).toFixed(1);
+
+            document.getElementById('bwtOutput').innerHTML = 
+                `<span style="color:#5090ff;">📦 BWT + MTF + RLE Compression</span>\n` +
+                `<span class="stats-line">Original: ${input.length} bytes (${origBytes} bits)</span>\n` +
+                `<span class="stats-line">Compressed: ~${compressedBytes} bits (BWT+MTF+RLE)</span>\n` +
+                `<span class="stats-line">Compression Ratio: ${ratio}%</span>\n\n` +
+                `<span style="color:#aaa;">BWT Result: ${bwt}</span>\n` +
+                `<span style="color:#aaa;">MTF Indices: [${mtf.join(', ')}]</span>\n` +
+                `<span style="color:#aaa;">RLE Output: ${rle}</span>`;
+        }
+
+        // ============================================================
+        // JPEG-LIKE DCT COMPRESSION
+        // ============================================================
+        const JPEG_QUANT = [
+            16,11,10,16,24,40,51,61,
+            12,12,14,19,26,58,60,55,
+            14,13,16,24,40,57,69,56,
+            14,17,22,29,51,87,80,62,
+            18,22,37,56,68,109,103,77,
+            24,35,55,64,81,104,113,92,
+            49,64,78,87,103,121,120,101,
+            72,92,95,98,112,100,103,99
+        ];
+
+        function dct1D(input) {
+            let N = input.length;
+            let output = [];
+            for (let k = 0; k < N; k++) {
+                let sum = 0;
+                for (let n = 0; n < N; n++) {
+                    sum += input[n] * Math.cos((Math.PI * k * (2 * n + 1)) / (2 * N));
+                }
+                output[k] = sum * (k === 0 ? Math.sqrt(1/N) : Math.sqrt(2/N));
+            }
+            return output;
+        }
+
+        function jpegCompress() {
+            let inputStr = document.getElementById('jpegInput').value;
+            let quality = parseInt(document.getElementById('jpegQuality').value);
+
+            let values = inputStr.split(',').map(Number);
+            if (values.length !== 64) {
+                document.getElementById('jpegOutput').textContent = 'Error: Must provide exactly 64 values for an 8x8 block';
+                return;
+            }
+
+            // Level shift
+            let shifted = values.map(v => v - 128);
+
+            // 2D DCT: apply 1D DCT on rows then columns
+            let block = [];
+            for (let i = 0; i < 8; i++) {
+                block[i] = shifted.slice(i * 8, (i + 1) * 8);
+            }
+            // Rows
+            for (let i = 0; i < 8; i++) {
+                block[i] = dct1D(block[i]);
+            }
+            // Columns
+            let transposed = [];
+            for (let j = 0; j < 8; j++) {
+                let col = [];
+                for (let i = 0; i < 8; i++) col.push(block[i][j]);
+                let dctCol = dct1D(col);
+                for (let i = 0; i < 8; i++) block[i][j] = dctCol[i];
+            }
+
+            // Quantization
+            let quantScale = quality < 50 ? 5000/quality : 200 - 2*quality;
+            let quantized = [];
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    let q = Math.max(1, Math.round(JPEG_QUANT[i*8+j] * quantScale / 50));
+                    quantized.push(Math.round(block[i][j] / q));
+                }
+            }
+
+            // Zigzag scan
+            const zigzag = [
+                0,1,8,16,9,2,3,10,17,24,32,25,18,11,4,5,
+                12,19,26,33,40,48,41,34,27,20,13,6,7,14,21,
+                28,35,42,49,56,57,50,43,36,29,22,15,23,30,
+                37,44,51,58,59,52,45,38,31,39,46,53,60,61,
+                54,47,55,62,63
+            ];
+            let zigzagged = zigzag.map(idx => quantized[idx]);
+
+            // RLE on AC coefficients
+            let rle = [];
+            let run = 0;
+            for (let i = 1; i < 64; i++) {
+                if (zigzagged[i] === 0) {
+                    run++;
+                } else {
+                    rle.push({run, value: zigzagged[i]});
+                    run = 0;
+                }
+            }
+            rle.push({run: 0, value: 0}); // EOB
+
+            let nonZero = zigzagged.filter(v => v !== 0).length;
+            let compressedSize = 1 + rle.length * 2; // DC + (run,val) pairs
+
+            document.getElementById('jpegOutput').innerHTML = 
+                `<span style="color:#5090ff;">📷 JPEG-like DCT Compression</span>\n` +
+                `<span class="stats-line">Quality: ${quality} | Quantization scale: ${quantScale.toFixed(1)}</span>\n\n` +
+                `<span style="color:#aaa;">DC Coefficient:</span> ${zigzagged[0]}\n` +
+                `<span style="color:#aaa;">Non-zero AC Coefficients:</span> ${nonZero}\n\n` +
+                `<span style="color:#aaa;">Zigzag AC + RLE (${rle.length} symbols):</span>\n` +
+                rle.map((r, i) => r.value === 0 ? 'EOB' : `(${r.run},${r.value})`).join(' → ') +
+                `\n\n` +
+                `<span class="stats-line">Quantized Block: [${quantized.slice(0, 16).join(', ')}${quantized.length > 16 ? ', ...' : ''}]</span>`;
+        }
+
+        function jpegDecompress() {
+            let inputStr = document.getElementById('jpegInput').value;
+            let quality = parseInt(document.getElementById('jpegQuality').value);
+
+            let quantized = inputStr.split(',').map(Number);
+            if (quantized.length !== 64) {
+                document.getElementById('jpegOutput').textContent = 'Decompression requires 64 quantized DCT coefficients';
+                return;
+            }
+
+            // Dequantize
+            let quantScale = quality < 50 ? 5000/quality : 200 - 2*quality;
+            let dequant = [];
+            for (let i = 0; i < 64; i++) {
+                let q = Math.max(1, Math.round(JPEG_QUANT[i] * quantScale / 50));
+                dequant.push(quantized[i] * q);
+            }
+
+            // Inverse DCT (simplified: add 128 to DC component for reconstruction)
+            let reconstructed = dequant.map(v => Math.round(v + 128));
+            let clamped = reconstructed.map(v => Math.max(0, Math.min(255, v)));
+
+            document.getElementById('jpegOutput').innerHTML = 
+                `<span style="color:#00ff88;">📋 JPEG DCT Decompression</span>\n` +
+                `<span class="stats-line">Quality: ${quality}</span>\n\n` +
+                `<span style="color:#aaa;">Reconstructed Block (first 16 values):</span>\n` +
+                `[${clamped.slice(0, 16).join(', ')}${clamped.length > 16 ? ', ...' : ''}]\n\n` +
+                `<span class="stats-line">Note: Full decompression requires inverse DCT, which is computed during actual JPEG decode.</span>`;
+        }
+
+        // ============================================================
+        // K-MEANS COLOR QUANTIZATION
+        // ============================================================
+        function kmeansCompress() {
+            let inputStr = document.getElementById('kmeansInput').value;
+            let K = parseInt(document.getElementById('kmeansK').value);
+
+            let pixels = inputStr.split(/\s+/).map(p => {
+                let parts = p.split(',').map(Number);
+                return { r: parts[0], g: parts[1], b: parts[2] };
+            }).filter(p => !isNaN(p.r));
+
+            if (pixels.length < K) {
+                document.getElementById('kmeansOutput').textContent = 'Error: Need at least K pixels';
+                return;
+            }
+
+            // Initialize centroids (random pick from pixels)
+            let centroids = [];
+            let used = new Set();
+            while (centroids.length < K) {
+                let idx = Math.floor(Math.random() * pixels.length);
+                if (!used.has(idx)) {
+                    centroids.push({...pixels[idx]});
+                    used.add(idx);
+                }
+            }
+
+            // K-means iterations
+            let assignments = new Array(pixels.length).fill(0);
+            for (let iter = 0; iter < 20; iter++) {
+                // Assign pixels to nearest centroid
+                for (let i = 0; i < pixels.length; i++) {
+                    let minDist = Infinity;
+                    let best = 0;
+                    for (let k = 0; k < K; k++) {
+                        let dr = pixels[i].r - centroids[k].r;
+                        let dg = pixels[i].g - centroids[k].g;
+                        let db = pixels[i].b - centroids[k].b;
+                        let dist = dr*dr + dg*dg + db*db;
+                        if (dist < minDist) {
+                            minDist = dist;
+                            best = k;
+                        }
+                    }
+                    assignments[i] = best;
+                }
+
+                // Update centroids
+                for (let k = 0; k < K; k++) {
+                    let cluster = pixels.filter((_, i) => assignments[i] === k);
+                    if (cluster.length > 0) {
+                        centroids[k] = {
+                            r: Math.round(cluster.reduce((s, p) => s + p.r, 0) / cluster.length),
+                            g: Math.round(cluster.reduce((s, p) => s + p.g, 0) / cluster.length),
+                            b: Math.round(cluster.reduce((s, p) => s + p.b, 0) / cluster.length)
+                        };
+                    }
+                }
+            }
+
+            // Quantize: replace each pixel with nearest centroid
+            let quantized = pixels.map((_, i) => centroids[assignments[i]]);
+
+            let origSize = pixels.length * 24; // 24 bits per pixel
+            let compressedSize = K * 24 + pixels.length * Math.ceil(Math.log2(K));
+            let ratio = ((1 - compressedSize / origSize) * 100).toFixed(1);
+
+            document.getElementById('kmeansOutput').innerHTML = 
+                `<span style="color:#5090ff;">🎨 K-means Color Quantization (K=${K})</span>\n` +
+                `<span class="stats-line">Original: ${pixels.length} pixels × 24 bits = ${origSize} bits</span>\n` +
+                `<span class="stats-line">Compressed: ${compressedSize} bits (palette + indices)</span>\n` +
+                `<span class="stats-line">Compression Ratio: ${ratio}%</span>\n\n` +
+                `<span style="color:#aaa;">Centroids (palette of ${K} colors):</span>\n` +
+                centroids.map((c, i) => `  [${i}] RGB(${c.r},${c.g},${c.b})`).join('\n') + '\n\n' +
+                `<span style="color:#aaa;">Quantized Pixels:</span>\n` +
+                quantized.map((p, i) => `(${p.r},${p.g},${p.b})`).join(' ') + '\n\n' +
+                `<span class="stats-line">Cluster sizes: ${centroids.map((c, k) => `${k}:${assignments.filter(a => a === k).length}`).join(', ')}</span>`;
+        }
+
+        // ============================================================
+        // PATCH-BASED IMAGE COMPRESSION (PBIC)
+        // ============================================================
+        function pbicCompress() {
+            let inputStr = document.getElementById('pbicInput').value;
+            let patchSize = parseInt(document.getElementById('pbicPatch').value);
+            let threshold = parseInt(document.getElementById('pbicThresh').value);
+
+            let values = inputStr.split(',').map(Number);
+            if (values.length < patchSize) {
+                document.getElementById('pbicOutput').textContent = 'Error: Patch too large for input size';
+                return;
+            }
+
+            // Split into patches
+            let patches = [];
+            for (let i = 0; i + patchSize <= values.length; i += Math.floor(patchSize/2)) {
+                patches.push(values.slice(i, i + patchSize));
+            }
+
+            // Find similar patches
+            let similarPairs = [];
+            let used = new Set();
+            for (let i = 0; i < patches.length; i++) {
+                if (used.has(i)) continue;
+                for (let j = i + 1; j < patches.length; j++) {
+                    if (used.has(j)) continue;
+                    let diff = 0;
+                    for (let k = 0; k < patchSize; k++) {
+                        diff += Math.abs(patches[i][k] - patches[j][k]);
+                    }
+                    if (diff / patchSize < threshold) {
+                        similarPairs.push({ base: i, similar: j, diff });
+                        used.add(j);
+                        break;
+                    }
+                }
+            }
+
+            // Compute compression stats
+            let origSize = values.length * 8;
+            let compressedSize = (patches.length - similarPairs.length) * patchSize * 8 + // unique patches
+                                  similarPairs.length * (Math.ceil(Math.log2(patches.length)) + 8); // references
+            let ratio = ((1 - compressedSize / origSize) * 100).toFixed(1);
+
+            document.getElementById('pbicOutput').innerHTML = 
+                `<span style="color:#5090ff;">📦 Patch-Based Image Compression (PBIC)</span>\n` +
+                `<span class="stats-line">Patch Size: ${patchSize} | Similarity Threshold: ${threshold}</span>\n` +
+                `<span class="stats-line">Total Patches: ${patches.length} | Similar Pairs: ${similarPairs.length}</span>\n` +
+                `<span class="stats-line">Original: ${origSize} bits → Compressed: ~${compressedSize} bits</span>\n` +
+                `<span class="stats-line">Compression Ratio: ${ratio}%</span>\n\n` +
+                `<span style="color:#aaa;">Similar Patch Pairs (base → similar, diff):</span>\n` +
+                (similarPairs.length > 0 ? similarPairs.map(p => 
+                    `  Patch ${p.base} → ${p.similar} (avg diff: ${(p.diff/patchSize).toFixed(1)})`
+                ).join('\n') : '  None found') + '\n\n' +
+                `<span style="color:#aaa;">Unique Patches (${patches.length - similarPairs.length}):</span>\n` +
+                (patches.length - similarPairs.length > 0 ? 
+                    patches.filter((_, i) => !similarPairs.some(p => p.similar === i))
+                           .map((p, i) => `  [${i}]: [${p.join(',')}]`).join('\n')
+                    : '  All patches are referenced');
+        }
+
+        // ============================================================
+        // SLIDER UPDATES
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // JPEG quality slider
+            document.getElementById('jpegQuality').addEventListener('input', function() {
+                document.getElementById('jpegQualityVal').textContent = this.value;
+            });
+
+            // K-means K slider
+            document.getElementById('kmeansK').addEventListener('input', function() {
+                document.getElementById('kmeansKVal').textContent = this.value;
+            });
+
+            // PBIC sliders
+            document.getElementById('pbicPatch').addEventListener('input', function() {
+                document.getElementById('pbicPatchVal').textContent = this.value;
+            });
+            document.getElementById('pbicThresh').addEventListener('input', function() {
+                document.getElementById('pbicThreshVal').textContent = this.value;
+            });
+
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const target = this.dataset.tab;
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                    document.getElementById('panel-' + target).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
