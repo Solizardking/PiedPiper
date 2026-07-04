@@ -1,0 +1,16 @@
+# Portfolio Optimization Blueprint — Cufolio × NVIDIA
+framework: nemo
+base_model: ordlibrary/clawd-trading-wallet
+dataset: solana_market_data_v4
+portfolio:
+  risk_free_rate: 0.05
+  max_leverage: 2.0
+  constraints:
+    max_position_size: 0.25
+    min_diversification: 4
+    rebalance_threshold: 0.05
+  optimization: mean_variance
+trainer:
+  num_epochs: 10
+  batch_size: 32
+output: models/portfolio-optimizer-v1

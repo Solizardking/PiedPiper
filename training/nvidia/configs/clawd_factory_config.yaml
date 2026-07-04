@@ -1,0 +1,14 @@
+# Clawd Factory Configuration
+datasets:
+  - name: solana_tx_history
+    path: datasets/solana_tx_history
+    split: train
+  - name: clawd_synthetic
+    path: datasets/clawd_synthetic
+    split: train
+training:
+  framework: nemo
+  precision: bf16
+  num_gpus: 8
+  num_nodes: 1
+  checkpoint_dir: /checkpoints/clawd-factory

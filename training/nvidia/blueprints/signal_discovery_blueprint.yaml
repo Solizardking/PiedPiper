@@ -1,0 +1,18 @@
+# Signal Discovery Blueprint — Onchain Alpha Mining
+framework: nemo
+base_model: ordlibrary/core-ai-clawd-1.5b
+dataset: solana_raw_tx_stream_v5
+signal_discovery:
+  windows: [60, 300, 3600, 86400]
+  min_signal_noise: 2.0
+  features:
+    - tx_volume_momentum
+    - wallet_accumulation
+    - mev_opportunity
+    - cross_program_flow
+  output_signals: alpha_signals_v1
+trainer:
+  num_epochs: 8
+  batch_size: 16
+  learning_rate: 3e-5
+output: models/signal-discoverer-v1

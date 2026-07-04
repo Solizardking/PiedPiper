@@ -1,0 +1,12 @@
+# Solana Transaction Foundation Configuration
+model: solanaclawd/solana-tx-foundation-1.5b
+dataset: solana_tx_archive_v7
+objectives: [next_tx_prediction, wallet_modeling, program_forecast, anomaly_detection]
+training:
+  batch_size: 4
+  gradient_accumulation: 8
+  learning_rate: 1e-4
+  warmup_steps: 1000
+  num_epochs: 20
+  precision: bf16
+  checkpoint_every: 500

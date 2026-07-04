@@ -1,0 +1,7 @@
+# NVIDIA NIM Configuration
+nim_port: 8000
+nim_model: ordlibrary/core-ai-clawd-1.5b
+nim_framework: triton
+nim_gpu: auto
+nim_concurrency: 4
+nim_cache_size: 4096

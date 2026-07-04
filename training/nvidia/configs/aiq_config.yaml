@@ -1,0 +1,7 @@
+# AIQ Configuration — NVIDIA AI Quant
+nim_endpoint: http://localhost:8000/nim/aiq
+model_name: clawd-trading-wallet
+quantization: fp8
+max_batch_size: 32
+inference_server: triton
+cache_dir: /models/cache

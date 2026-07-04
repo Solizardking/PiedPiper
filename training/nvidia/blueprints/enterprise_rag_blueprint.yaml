@@ -1,0 +1,14 @@
+# Enterprise RAG Blueprint — Solana Knowledge Base
+framework: nemo
+base_model: ordlibrary/hauhau-qwen36-onchain
+rag:
+  embedding_model: BAAI/bge-m3
+  reranker: BAAI/bge-reranker-v2-m3
+  chunk_size: 512
+  chunk_overlap: 64
+  vector_db: milvus
+datasets:
+  - solana_program_docs
+  - nvidia_nim_docs
+  - clawd_agent_guides
+output: models/enterprise-rag-solana-v1

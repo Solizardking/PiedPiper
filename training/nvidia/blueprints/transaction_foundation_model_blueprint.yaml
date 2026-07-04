@@ -1,0 +1,23 @@
+# Transaction Foundation Model Blueprint — Solana TX Foundation
+framework: nemo
+base_model: solanaclawd/solana-tx-foundation-1.5b
+dataset: solana_tx_archive_v7
+objectives:
+  - next_tx_prediction
+  - wallet_behavior_modeling
+  - program_interaction_forecast
+  - anomaly_detection
+model:
+  architecture: decoder_only
+  vocab_size: 65536
+  max_seq_len: 8192
+  num_layers: 24
+  num_heads: 16
+  hidden_dim: 2048
+trainer:
+  num_epochs: 20
+  batch_size: 4
+  gradient_accumulation: 8
+  learning_rate: 1e-4
+  warmup_steps: 1000
+output: models/tx-foundation-v1

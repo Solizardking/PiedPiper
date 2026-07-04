@@ -1,0 +1,15 @@
+# Model Distillation Blueprint — Clawd → LoRA Student
+framework: nemo
+teacher_model: ordlibrary/hauhau-qwen36-onchain
+student_model: ordlibrary/core-ai-clawd-1.5b
+distillation:
+  temperature: 4.0
+  alpha_ce: 0.5
+  alpha_clm: 0.5
+  layer_mapping: [0,2,4,6,8,10,12,14,16,18,20,22,24]
+dataset: clawd_synthetic_v2
+trainer:
+  num_epochs: 5
+  batch_size: 16
+  learning_rate: 2e-5
+output: models/clawd-distilled-v1
