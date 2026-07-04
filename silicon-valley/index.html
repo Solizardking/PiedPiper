@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silicon Valley - Multi-Agent Collision Avoidance</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.0/p5.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+            color: #e0e0e0;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 320px;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(15,15,15,0.98), rgba(5,5,5,0.98));
+            border-right: 1px solid rgba(0,255,136,0.1);
+            padding: 30px 25px;
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        #sidebar .back {
+            display: inline-block;
+            color: #444;
+            text-decoration: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            margin-bottom: 25px;
+            transition: color 0.2s;
+        }
+        #sidebar .back:hover { color: #00ff88; }
+
+        #sidebar h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #sidebar .subtitle {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #00ff88;
+            margin-bottom: 20px;
+        }
+
+        #sidebar p {
+            font-size: 0.85rem;
+            color: #777;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 18px;
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            background: rgba(0,255,136,0.08);
+            border: 1px solid rgba(0,255,136,0.2);
+            border-radius: 8px;
+            color: #00ff88;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .btn:hover {
+            background: rgba(0,255,136,0.15);
+            border-color: rgba(0,255,136,0.4);
+        }
+
+        .btn.danger {
+            border-color: rgba(255,50,50,0.2);
+            color: #ff4444;
+            background: rgba(255,50,50,0.08);
+        }
+        .btn.danger:hover {
+            background: rgba(255,50,50,0.15);
+            border-color: rgba(255,50,50,0.4);
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider-group input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 4px;
+            background: rgba(0,255,136,0.2);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #00ff88;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider-group .val {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #00ff88;
+            min-width: 30px;
+            text-align: right;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 10px;
+        }
+
+        .info-item .info-label {
+            font-size: 0.6rem;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-item .info-val {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            color: #00ff88;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 320px;
+            width: calc(100vw - 320px);
+            height: 100vh;
+        }
+
+        @media (max-width: 768px) {
+            #sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 50vh;
+                border-right: none;
+                border-bottom: 1px solid rgba(0,255,136,0.1);
+            }
+            #canvas-container {
+                left: 0;
+                width: 100vw;
+                top: 50vh;
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <a href="../index.html" class="back">← PiedPiper Hub</a>
+        <h1>Silicon Valley</h1>
+        <div class="subtitle">Multi-Agent Collision Avoidance</div>
+        <p>Intelligent agents navigate complex obstacle environments using cellular automaton pathfinding with North-Western priority scheduling and deadlock avoidance.</p>
+
+        <div class="control-group">
+            <label>Number of Agents</label>
+            <div class="slider-group">
+                <input type="range" id="agentCount" min="1" max="50" value="5">
+                <span class="val" id="agentCountVal">5</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label>Obstacle Density (%)</label>
+            <div class="slider-group">
+                <input type="range" id="obstacleDensity" min="5" max="50" value="20">
+                <span class="val" id="obstacleDensityVal">20</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label>Speed (frames per tick)</label>
+            <div class="slider-group">
+                <input type="range" id="simSpeed" min="1" max="20" value="5">
+                <span class="val" id="simSpeedVal">5</span>
+            </div>
+        </div>
+
+        <button class="btn" id="randomizeBtn">🌀 Randomize Obstacles</button>
+        <button class="btn" id="resetBtn">🔄 Reset Agents</button>
+        <button class="btn danger" id="clearBtn">✕ Clear All</button>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Agents</div>
+                <div class="info-val" id="agentInfo">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Arrived</div>
+                <div class="info-val" id="arrivedInfo">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Ticks</div>
+                <div class="info-val" id="tickInfo">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Deadlocks</div>
+                <div class="info-val" id="deadlockInfo">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <script>
+        // ============================================================
+        // Multi-Agent Collision Avoidance Simulator
+        // Based on the C++ agent algorithm from MultiAgent_CollisionAvoidance
+        // ============================================================
+
+        const GRID_SIZE = 30; // 30x30 grid
+        const CELL_SIZE = 20; // pixels per cell
+
+        let grid = [];
+        let agents = [];
+        let destinations = [];
+        let tickCount = 0;
+        let deadlockCount = 0;
+        let arrivedCount = 0;
+        let simRunning = true;
+        let frameCounter = 0;
+
+        const COLORS = {
+            FREE: [20, 20, 20],
+            AGENT: [0, 255, 136],
+            OBSTACLE: [40, 40, 50],
+            OBSTACLE_BORDER: [60, 60, 80],
+            AGENT_GOAL: [255, 200, 50],
+            AGENT_TRAIL: [0, 180, 90],
+            PATH_HIGHLIGHT: [0, 255, 136, 30],
+            DEADLOCK: [255, 50, 50],
+        };
+
+        class Position {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+            }
+            equals(p) { return this.x === p.x && this.y === p.y; }
+            distance(p) { return Math.sqrt((this.x-p.x)**2 + (this.y-p.y)**2); }
+        }
+
+        class Agent {
+            constructor(x, y, id) {
+                this.pos = new Position(x, y);
+                this.startPos = new Position(x, y);
+                this.destination = new Position(
+                    Math.floor(Math.random() * GRID_SIZE),
+                    Math.floor(Math.random() * GRID_SIZE)
+                );
+                this.id = id;
+                this.HP_NW = true;
+                this.t_switch = 2;
+                this.t_elapsed = 0;
+                this.arrived = false;
+                this.deadlocked = false;
+                this.path = [new Position(x, y)];
+                this.stuckCounter = 0;
+            }
+
+            tick() {
+                this.t_elapsed++;
+                this.t_elapsed %= this.t_switch;
+                if (this.t_elapsed === 0) {
+                    this.HP_NW = !this.HP_NW;
+                }
+            }
+
+            distance_e(p1, p2) {
+                return Math.sqrt(
+                    Math.abs(p1.x - p2.x) ** 2 + Math.abs(p1.y - p2.y) ** 2
+                );
+            }
+
+            distance_c(p1, p2) {
+                return Math.min(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
+            }
+
+            distance_c_vals(a, b, c, d) {
+                return Math.min(Math.abs(c - a), Math.abs(d - b));
+            }
+
+            checkRule1(pos_t1, scope) {
+                // Check if target cell is FREE
+                let tx = pos_t1.x;
+                let ty = pos_t1.y;
+                if (tx < 0 || ty < 0 || tx >= GRID_SIZE || ty >= GRID_SIZE) return false;
+                if (scope[tx][ty] !== 0) return false;
+                // Also check no other agent is moving there
+                for (let a of agents) {
+                    if (a.id !== this.id && !a.arrived) {
+                        if (a.pos.x === tx && a.pos.y === ty) return false;
+                    }
+                }
+                return true;
+            }
+
+            checkRule2(pos_t1, scope) {
+                // Check for nearby agents (collision avoidance radius = 1)
+                for (let a of agents) {
+                    if (a.id === this.id || a.arrived) continue;
+                    let dx = Math.abs(a.pos.x - pos_t1.x);
+                    let dy = Math.abs(a.pos.y - pos_t1.y);
+                    if (dx <= 1 && dy <= 1) {
+                        // Check priority using HP_NW
+                        if (this.HP_NW) {
+                            // NW priority: agents in NW quadrant get priority
+                            if (a.pos.x <= pos_t1.x && a.pos.y <= pos_t1.y) return false;
+                        } else {
+                            // SE priority
+                            if (a.pos.x >= pos_t1.x && a.pos.y >= pos_t1.y) return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+            move(destination, scope) {
+                if (this.pos.equals(destination)) {
+                    this.arrived = true;
+                    return;
+                }
+
+                // Rule 3: Move in the direction of greatest distance
+                if (!this.moveRule3(destination, scope)) {
+                    // Rule 4: Try all adjacent cells
+                    if (!this.moveRule4(destination, scope)) {
+                        this.stuckCounter++;
+                        if (this.stuckCounter > 20) {
+                            this.deadlocked = true;
+                        }
+                    } else {
+                        this.stuckCounter = 0;
+                    }
+                } else {
+                    this.stuckCounter = 0;
+                }
+            }
+
+            moveRule3(destination, scope) {
+                let pos_t1 = new Position(this.pos.x, this.pos.y);
+
+                let dx = destination.x - this.pos.x;
+                let dy = destination.y - this.pos.y;
+
+                if (Math.abs(dx) < Math.abs(dy)) {
+                    pos_t1.y += (dy > 0) ? 1 : -1;
+                } else if (Math.abs(dx) > Math.abs(dy)) {
+                    pos_t1.x += (dx > 0) ? 1 : -1;
+                } else {
+                    pos_t1.x += (dx > 0) ? 1 : -1;
+                    pos_t1.y += (dy > 0) ? 1 : -1;
+                }
+
+                if (this.checkRule1(pos_t1, scope) && this.checkRule2(pos_t1, scope)) {
+                    this.pos.x = pos_t1.x;
+                    this.pos.y = pos_t1.y;
+                    this.path.push(new Position(this.pos.x, this.pos.y));
+                    return true;
+                }
+                return false;
+            }
+
+            moveRule4(destination, scope) {
+                for (let x = -1; x <= 1; x++) {
+                    for (let y = -1; y <= 1; y++) {
+                        if (x === 0 && y === 0) continue;
+                        let pt1 = new Position(this.pos.x + x, this.pos.y + y);
+                        if (this.checkRule1(pt1, scope) && this.checkRule2(pt1, scope)) {
+                            if (this.distance_e(pt1, destination) < this.distance_e(this.pos, destination)) {
+                                this.pos.x = pt1.x;
+                                this.pos.y = pt1.y;
+                                this.path.push(new Position(this.pos.x, this.pos.y));
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+
+        function initGrid() {
+            grid = [];
+            for (let i = 0; i < GRID_SIZE; i++) {
+                grid[i] = [];
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    grid[i][j] = 0; // FREE
+                }
+            }
+        }
+
+        function addObstacles(density) {
+            const totalCells = GRID_SIZE * GRID_SIZE;
+            const obstacleCount = Math.floor(totalCells * density / 100);
+            let placed = 0;
+            while (placed < obstacleCount) {
+                let x = Math.floor(Math.random() * GRID_SIZE);
+                let y = Math.floor(Math.random() * GRID_SIZE);
+                if (grid[x][y] === 0) {
+                    grid[x][y] = 2; // OBSTACLE
+                    placed++;
+                }
+            }
+        }
+
+        function initAgents(count) {
+            agents = [];
+            let placed = 0;
+            while (placed < count) {
+                let x = Math.floor(Math.random() * GRID_SIZE);
+                let y = Math.floor(Math.random() * GRID_SIZE);
+                if (grid[x][y] === 0) {
+                    let occupied = false;
+                    for (let a of agents) {
+                        if (a.pos.x === x && a.pos.y === y) { occupied = true; break; }
+                    }
+                    if (!occupied) {
+                        agents.push(new Agent(x, y, placed));
+                        placed++;
+                    }
+                }
+            }
+            arrivedCount = 0;
+            deadlockCount = 0;
+            tickCount = 0;
+        }
+
+        function getGridScope(agent) {
+            let scope = [];
+            for (let x = 0; x < GRID_SIZE; x++) {
+                scope[x] = [];
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    scope[x][y] = grid[x][y];
+                }
+            }
+            // Mark other agents
+            for (let a of agents) {
+                if (a.id !== agent.id && !a.arrived) {
+                    scope[a.pos.x][a.pos.y] = 1; // AGENT
+                }
+            }
+            return scope;
+        }
+
+        function simulationTick() {
+            if (!simRunning) return;
+
+            // Shuffle agents each tick for fairness
+            let shuffled = [...agents];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            let newArrived = 0;
+            let newDeadlocks = 0;
+
+            for (let agent of shuffled) {
+                if (agent.arrived) {
+                    newArrived++;
+                    continue;
+                }
+                if (agent.deadlocked) {
+                    newDeadlocks++;
+                    continue;
+                }
+                let scope = getGridScope(agent);
+                agent.move(agent.destination, scope);
+                agent.tick();
+                if (agent.arrived) newArrived++;
+                if (agent.deadlocked) newDeadlocks++;
+            }
+
+            arrivedCount = newArrived;
+            deadlockCount = newDeadlocks;
+            tickCount++;
+
+            // Check if all agents arrived or deadlocked
+            if (arrivedCount + deadlockCount >= agents.length) {
+                simRunning = false;
+            }
+
+            updateInfo();
+        }
+
+        function setup() {
+            let canvas = createCanvas(GRID_SIZE * CELL_SIZE, GRID_SIZE * CELL_SIZE);
+            canvas.parent('canvas-container');
+
+            initGrid();
+            addObstacles(20);
+            initAgents(5);
+        }
+
+        function draw() {
+            background(10, 10, 12);
+
+            // Draw grid
+            for (let i = 0; i < GRID_SIZE; i++) {
+                for (let j = 0; j < GRID_SIZE; j++) {
+                    let x = i * CELL_SIZE;
+                    let y = j * CELL_SIZE;
+
+                    if (grid[i][j] === 2) {
+                        fill(COLORS.OBSTACLE[0], COLORS.OBSTACLE[1], COLORS.OBSTACLE[2]);
+                        stroke(COLORS.OBSTACLE_BORDER[0], COLORS.OBSTACLE_BORDER[1], COLORS.OBSTACLE_BORDER[2]);
+                        strokeWeight(1);
+                        rect(x, y, CELL_SIZE, CELL_SIZE);
+                    } else {
+                        noStroke();
+                        fill(COLORS.FREE[0], COLORS.FREE[1], COLORS.FREE[2]);
+                        rect(x, y, CELL_SIZE, CELL_SIZE);
+                    }
+                }
+            }
+
+            // Draw destinations
+            for (let agent of agents) {
+                let dx = agent.destination.x * CELL_SIZE + CELL_SIZE/2;
+                let dy = agent.destination.y * CELL_SIZE + CELL_SIZE/2;
+                if (agent.arrived) {
+                    fill(255, 255, 255, 200);
+                    stroke(0, 255, 136, 200);
+                    strokeWeight(2);
+                    circle(dx, dy, CELL_SIZE * 0.8);
+                } else {
+                    fill(COLORS.AGENT_GOAL[0], COLORS.AGENT_GOAL[1], COLORS.AGENT_GOAL[2], 100);
+                    noStroke();
+                    circle(dx, dy, CELL_SIZE * 0.5);
+                }
+            }
+
+            // Draw agent trails
+            for (let agent of agents) {
+                if (agent.path.length < 2) continue;
+                noFill();
+                stroke(COLORS.AGENT_TRAIL[0], COLORS.AGENT_TRAIL[1], COLORS.AGENT_TRAIL[2], 80);
+                strokeWeight(2);
+                beginShape();
+                for (let p of agent.path) {
+                    vertex(p.x * CELL_SIZE + CELL_SIZE/2, p.y * CELL_SIZE + CELL_SIZE/2);
+                }
+                endShape();
+            }
+
+            // Draw agents
+            for (let agent of agents) {
+                let x = agent.pos.x * CELL_SIZE + CELL_SIZE/2;
+                let y = agent.pos.y * CELL_SIZE + CELL_SIZE/2;
+
+                if (agent.arrived) {
+                    fill(50, 255, 150, 150);
+                    noStroke();
+                    circle(x, y, CELL_SIZE * 0.6);
+                    continue;
+                }
+
+                if (agent.deadlocked) {
+                    fill(COLORS.DEADLOCK[0], COLORS.DEADLOCK[1], COLORS.DEADLOCK[2], 200);
+                    stroke(255, 0, 0, 100);
+                    strokeWeight(2);
+                    circle(x, y, CELL_SIZE * 0.8);
+                    // X mark
+                    stroke(255, 0, 0);
+                    strokeWeight(2);
+                    line(x-5, y-5, x+5, y+5);
+                    line(x+5, y-5, x-5, y+5);
+                    continue;
+                }
+
+                // Normal agent
+                fill(COLORS.AGENT[0], COLORS.AGENT[1], COLORS.AGENT[2]);
+                stroke(COLORS.AGENT[0], COLORS.AGENT[1], COLORS.AGENT[2], 100);
+                strokeWeight(1);
+                circle(x, y, CELL_SIZE * 0.7);
+
+                // Agent ID
+                fill(0, 0, 0, 180);
+                noStroke();
+                textAlign(CENTER, CENTER);
+                textSize(9);
+                text(agent.id, x, y);
+            }
+
+            // Grid lines
+            stroke(255, 255, 255, 10);
+            strokeWeight(0.5);
+            for (let i = 0; i <= GRID_SIZE; i++) {
+                line(i * CELL_SIZE, 0, i * CELL_SIZE, GRID_SIZE * CELL_SIZE);
+                line(0, i * CELL_SIZE, GRID_SIZE * CELL_SIZE, i * CELL_SIZE);
+            }
+
+            // Simulation tick with speed control
+            frameCounter++;
+            let speed = parseInt(document.getElementById('simSpeed').value);
+            if (frameCounter >= speed) {
+                frameCounter = 0;
+                simulationTick();
+            }
+        }
+
+        function updateInfo() {
+            document.getElementById('agentInfo').textContent = agents.length;
+            document.getElementById('arrivedInfo').textContent = arrivedCount;
+            document.getElementById('tickInfo').textContent = tickCount;
+            document.getElementById('deadlockInfo').textContent = deadlockCount;
+        }
+
+        // UI Controls
+        document.addEventListener('DOMContentLoaded', function() {
+            const agentSlider = document.getElementById('agentCount');
+            const densitySlider = document.getElementById('obstacleDensity');
+            const speedSlider = document.getElementById('simSpeed');
+
+            agentSlider.addEventListener('input', function() {
+                document.getElementById('agentCountVal').textContent = this.value;
+            });
+
+            densitySlider.addEventListener('input', function() {
+                document.getElementById('obstacleDensityVal').textContent = this.value;
+            });
+
+            speedSlider.addEventListener('input', function() {
+                document.getElementById('simSpeedVal').textContent = this.value;
+            });
+
+            document.getElementById('randomizeBtn').addEventListener('click', function() {
+                let density = parseInt(document.getElementById('obstacleDensity').value);
+                let count = parseInt(document.getElementById('agentCount').value);
+                initGrid();
+                addObstacles(density);
+                initAgents(count);
+                simRunning = true;
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                let density = parseInt(document.getElementById('obstacleDensity').value);
+                let count = parseInt(document.getElementById('agentCount').value);
+                initGrid();
+                addObstacles(density);
+                initAgents(count);
+                simRunning = true;
+            });
+
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                initGrid();
+                agents = [];
+                arrivedCount = 0;
+                deadlockCount = 0;
+                tickCount = 0;
+                simRunning = false;
+                updateInfo();
+            });
+        });
+
+        // Handle resize
+        function windowResized() {
+            // Keep canvas fixed size
+        }
+    </script>
+</body>
+</html>

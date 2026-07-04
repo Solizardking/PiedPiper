@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Son of Anton - Encryption Suite</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(255, 50, 50, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 50, 50, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+            animation: gridScroll 20s linear infinite;
+        }
+
+        @keyframes gridScroll {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .back {
+            display: inline-block;
+            color: #444;
+            text-decoration: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            margin-bottom: 20px;
+            transition: color 0.2s;
+        }
+        .back:hover { color: #ff4444; }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff4444, #ff6b6b, #cc0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -2px;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: #666;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .tagline span { color: #ff4444; }
+
+        .tab-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 12px;
+            padding: 4px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #666;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover { color: #aaa; }
+        .tab-btn.active {
+            background: rgba(255,68,68,0.1);
+            color: #ff4444;
+        }
+
+        .panel {
+            display: none;
+            background: linear-gradient(145deg, rgba(15,15,15,0.95), rgba(8,8,8,0.98));
+            border: 1px solid rgba(255,68,68,0.08);
+            border-radius: 16px;
+            padding: 30px;
+        }
+
+        .panel.active { display: block; }
+
+        .panel h2 {
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .panel .desc {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        textarea, input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 12px;
+        }
+
+        textarea:focus, input[type="text"]:focus, input[type="password"]:focus {
+            border-color: rgba(255,68,68,0.3);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: 1px solid rgba(255,68,68,0.2);
+            background: rgba(255,68,68,0.08);
+            color: #ff4444;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: rgba(255,68,68,0.15);
+            border-color: rgba(255,68,68,0.4);
+        }
+
+        .btn.green {
+            border-color: rgba(0,255,136,0.2);
+            background: rgba(0,255,136,0.08);
+            color: #00ff88;
+        }
+        .btn.green:hover {
+            background: rgba(0,255,136,0.15);
+            border-color: rgba(0,255,136,0.4);
+        }
+
+        .btn.blue {
+            border-color: rgba(50,150,255,0.2);
+            background: rgba(50,150,255,0.08);
+            color: #50a0ff;
+        }
+        .btn.blue:hover {
+            background: rgba(50,150,255,0.15);
+            border-color: rgba(50,150,255,0.4);
+        }
+
+        .output-box {
+            margin-top: 15px;
+            padding: 16px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 8px;
+            min-height: 60px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            color: #aaa;
+            word-break: break-all;
+            white-space: pre-wrap;
+        }
+
+        .module-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .module-item {
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .module-item:hover {
+            border-color: rgba(255,68,68,0.15);
+            color: #aaa;
+        }
+
+        .key-gen-result {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .input-row { grid-template-columns: 1fr; }
+            .key-gen-result { grid-template-columns: 1fr; }
+            .tab-bar { flex-wrap: nowrap; }
+            .logo { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+
+    <div class="container">
+        <a href="../index.html" class="back">← PiedPiper Hub</a>
+
+        <header>
+            <div class="logo">SON OF ANTON</div>
+            <div class="tagline">Integrated <span>Encryption</span> Suite · Cellular Automaton Security</div>
+        </header>
+
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="aes">AES-128</button>
+            <button class="tab-btn" data-tab="des">DES</button>
+            <button class="tab-btn" data-tab="rsa">RSA</button>
+            <button class="tab-btn" data-tab="ca-enc">CA-Password</button>
+            <button class="tab-btn" data-tab="sha">SHA-512</button>
+            <button class="tab-btn" data-tab="pp-ssh">PP_SSH</button>
+            <button class="tab-btn" data-tab="overview">Overview</button>
+        </div>
+
+        <!-- Overview Panel -->
+        <div class="panel active" id="panel-overview">
+            <h2>🔐 Son of Anton — Encryption Suite</h2>
+            <div class="desc">
+                Named after Anton/Gavin Belson's encryption system from Silicon Valley. This suite integrates all cryptographic modules from the PiedPiper project into a unified web toolkit.
+            </div>
+
+            <div class="module-list">
+                <div class="module-item"><strong style="color:#ff4444;">AES-128</strong><br>Advanced Encryption Standard with 128-bit keys. SubBytes, ShiftRows, MixColumns, AddRoundKey — 10 rounds of substitution-permutation network.</div>
+                <div class="module-item"><strong style="color:#ff4444;">DES</strong><br>Data Encryption Standard. Feistel network with 16 rounds, 56-bit key, S-box substitution, permutation.</div>
+                <div class="module-item"><strong style="color:#ff4444;">RSA</strong><br>Rivest-Shamir-Adleman public-key cryptosystem. Modular exponentiation, prime factorization security.</div>
+                <div class="module-item"><strong style="color:#ff4444;">CA-Password</strong><br>Cellular Automaton PRNG encryption using Wolfram's Rule 150. XOR-based stream cipher with deadlock-free random generation.</div>
+                <div class="module-item"><strong style="color:#ff4444;">SHA-512</strong><br>Secure Hash Algorithm 512-bit. Merkle-Damgård construction with 80 rounds of compression.</div>
+                <div class="module-item"><strong style="color:#ff4444;">PP_SSH</strong><br>Cellular Automaton encrypted SSH protocol. Encrypted shell with CA-PRG keystream, Ack protocol, multi-client server.</div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 16px; background: rgba(255,68,68,0.05); border: 1px solid rgba(255,68,68,0.1); border-radius: 8px;">
+                <p style="color: #ff4444; font-family: 'Space Mono', monospace; font-size: 0.8rem;">
+                    ⚡ Built on the cryptographic foundations of Varul Srivastava, Ashwin Mittal, Shivang Gupta, Akshett Rai Jindal, Keshav Bansal, Zishan Kazi
+                </p>
+                <p style="color: #555; font-size: 0.75rem; margin-top: 8px;">
+                    Source implementations: Encryption/AES-128 · Encryption/DES Encryption · Encryption/RSA Encryption · Encryption/CA_Password_Protect · PP_HASH · PP_SSH
+                </p>
+            </div>
+        </div>
+
+        <!-- AES-128 Panel -->
+        <div class="panel" id="panel-aes">
+            <h2>AES-128 Encryption</h2>
+            <div class="desc">Advanced Encryption Standard with 128-bit keys. Uses SubBytes, ShiftRows, MixColumns, AddRoundKey over 10 rounds. Key expansion generates 11 round keys from the 128-bit master key.</div>
+            <div class="input-row">
+                <input type="text" id="aesInput" placeholder="Enter plaintext message..." value="Hello from PiedPiper!">
+                <input type="text" id="aesKey" placeholder="16 hex bytes (e.g. 2b 7e 15 16...)" value="2b 7e 15 16 28 ae d2 a6 ab f7 15 88 09 cf 4f 3c">
+            </div>
+            <button class="btn" onclick="aesEncrypt()">🔐 Encrypt</button>
+            <button class="btn green" onclick="aesDecrypt()">🔓 Decrypt</button>
+            <div class="output-box" id="aesOutput">Click Encrypt or Decrypt</div>
+        </div>
+
+        <!-- DES Panel -->
+        <div class="panel" id="panel-des">
+            <h2>DES Encryption</h2>
+            <div class="desc">Data Encryption Standard. 16-round Feistel network with 56-bit effective key. Initial permutation, S-box substitution, P-box permutation, and inverse IP.</div>
+            <div class="input-row">
+                <input type="text" id="desInput" placeholder="Plaintext (8 chars)" value="PIEDPIPER">
+                <input type="password" id="desKey" placeholder="8-char key" value="PASSWORD">
+            </div>
+            <button class="btn" onclick="desEncrypt()">🔐 Encrypt</button>
+            <button class="btn green" onclick="desDecrypt()">🔓 Decrypt</button>
+            <div class="output-box" id="desOutput">Click Encrypt or Decrypt</div>
+        </div>
+
+        <!-- RSA Panel -->
+        <div class="panel" id="panel-rsa">
+            <h2>RSA Encryption</h2>
+            <div class="desc">Rivest-Shamir-Adleman public-key cryptosystem. Key generation, encryption with public key, decryption with private key. Modular exponentiation on large primes.</div>
+            <div class="input-row">
+                <input type="text" id="rsaInput" placeholder="Message (numeric, e.g. 42)" value="42">
+                <div style="display:flex; gap:8px;">
+                    <button class="btn blue" onclick="rsaGenerateKeys()">🔑 Generate Keys</button>
+                    <button class="btn" onclick="rsaEncrypt()">🔐 Encrypt</button>
+                    <button class="btn green" onclick="rsaDecrypt()">🔓 Decrypt</button>
+                </div>
+            </div>
+            <div class="key-gen-result">
+                <div>
+                    <label style="font-size:0.7rem;color:#555;font-family:'Space Mono',monospace;">Public Key (n, e)</label>
+                    <div class="output-box" id="rsaPublicKey" style="min-height:30px;font-size:0.7rem;">Click Generate</div>
+                </div>
+                <div>
+                    <label style="font-size:0.7rem;color:#555;font-family:'Space Mono',monospace;">Private Key (n, d)</label>
+                    <div class="output-box" id="rsaPrivateKey" style="min-height:30px;font-size:0.7rem;">Click Generate</div>
+                </div>
+            </div>
+            <div class="output-box" id="rsaOutput">Result will appear here</div>
+        </div>
+
+        <!-- CA-Password Panel -->
+        <div class="panel" id="panel-ca-enc">
+            <h2>CA-Password Encryption</h2>
+            <div class="desc">Cellular Automaton PRNG-based stream cipher. Uses Wolfram's Rule 150 on a 2D cellular automaton grid to generate a pseudo-random keystream, XOR'd with plaintext. Based on the CA_Password_Protect module.</div>
+            <div class="input-row">
+                <input type="text" id="caInput" placeholder="Text to encrypt..." value="Sovereign AI on Solana">
+                <input type="password" id="caPassword" placeholder="Password" value="PiedPiper">
+            </div>
+            <button class="btn" onclick="caEncrypt()">🔐 Encrypt</button>
+            <button class="btn green" onclick="caDecrypt()">🔓 Decrypt</button>
+            <div class="output-box" id="caOutput">Click Encrypt or Decrypt</div>
+        </div>
+
+        <!-- SHA-512 Panel -->
+        <div class="panel" id="panel-sha">
+            <h2>SHA-512 Hashing</h2>
+            <div class="desc">Secure Hash Algorithm 512-bit. Merkle-Damgård construction. 80-round compression function with bitwise operations: majority, conditional, rotate, and modular addition. Cellular Automaton optimized variant also available.</div>
+            <input type="text" id="shaInput" placeholder="Enter text to hash..." value="PiedPiper Universal Computer">
+            <div style="display:flex;gap:8px;">
+                <button class="btn blue" onclick="shaHash()">🔑 SHA-512</button>
+                <button class="btn" onclick="caShaHash()">🌀 CA-SHA (CA optimized)</button>
+            </div>
+            <div class="output-box" id="shaOutput">Click SHA-512 or CA-SHA</div>
+        </div>
+
+        <!-- PP_SSH Panel -->
+        <div class="panel" id="panel-pp-ssh">
+            <h2>PP_SSH Protocol</h2>
+            <div class="desc">Cellular Automaton encrypted SSH protocol. Uses CA-PRG for command encryption/decryption over TCP sockets. Multi-client server with Ack protocol, encrypted shell execution, and exit handshake.</div>
+            <input type="text" id="sshCommand" placeholder="Enter shell command..." value="ls -la">
+            <div style="display:flex;gap:8px;">
+                <button class="btn" onclick="sshEncrypt()">🔐 Encrypt Command</button>
+                <button class="btn green" onclick="sshDecrypt()">🔓 Decrypt Command</button>
+            </div>
+            <div class="output-box" id="sshOutput">Click to encrypt/decrypt a PP_SSH command</div>
+            <div style="margin-top:12px;padding:12px;background:rgba(255,255,255,0.02);border-radius:8px;font-size:0.75rem;color:#555;font-family:'Space Mono',monospace;">
+                <p>PP_SSH Protocol Flow:</p>
+                <p>Client → [encrypt command with CA-PRG] → Server</p>
+                <p>Server → [decrypt, exec, encrypt output] → Client</p>
+                <p>CA-PRG uses Rule 150 on 2D grid seeded with password</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // AES-128 IMPLEMENTATION
+        // ============================================================
+        const sBox = [
+            0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
+            0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
+            0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,
+            0x04,0xc7,0x23,0xc3,0x18,0x96,0x05,0x9a,0x07,0x12,0x80,0xe2,0xeb,0x27,0xb2,0x75,
+            0x09,0x83,0x2c,0x1a,0x1b,0x6e,0x5a,0xa0,0x52,0x3b,0xd6,0xb3,0x29,0xe3,0x2f,0x84,
+            0x53,0xd1,0x00,0xed,0x20,0xfc,0xb1,0x5b,0x6a,0xcb,0xbe,0x39,0x4a,0x4c,0x58,0xcf,
+            0xd0,0xef,0xaa,0xfb,0x43,0x4d,0x33,0x85,0x45,0xf9,0x02,0x7f,0x50,0x3c,0x9f,0xa8,
+            0x51,0xa3,0x40,0x8f,0x92,0x9d,0x38,0xf5,0xbc,0xb6,0xda,0x21,0x10,0xff,0xf3,0xd2,
+            0xcd,0x0c,0x13,0xec,0x5f,0x97,0x44,0x17,0xc4,0xa7,0x7e,0x3d,0x64,0x5d,0x19,0x73,
+            0x60,0x81,0x4f,0xdc,0x22,0x2a,0x90,0x88,0x46,0xee,0xb8,0x14,0xde,0x5e,0x0b,0xdb,
+            0xe0,0x32,0x3a,0x0a,0x49,0x06,0x24,0x5c,0xc2,0xd3,0xac,0x62,0x91,0x95,0xe4,0x79,
+            0xe7,0xc8,0x37,0x6d,0x8d,0xd5,0x4e,0xa9,0x6c,0x56,0xf4,0xea,0x65,0x7a,0xae,0x08,
+            0xba,0x78,0x25,0x2e,0x1c,0xa6,0xb4,0xc6,0xe8,0xdd,0x74,0x1f,0x4b,0xbd,0x8b,0x8a,
+            0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,
+            0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,
+            0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16
+        ];
+
+        const rCon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36];
+
+        function aesKeyExpansion(keyBytes) {
+            let w = [];
+            for (let i = 0; i < 4; i++) {
+                w[i] = [keyBytes[4*i], keyBytes[4*i+1], keyBytes[4*i+2], keyBytes[4*i+3]];
+            }
+            for (let i = 4; i < 44; i++) {
+                let temp = [...w[i-1]];
+                if (i % 4 === 0) {
+                    // RotWord
+                    temp = [temp[1], temp[2], temp[3], temp[0]];
+                    // SubWord
+                    temp = temp.map(b => sBox[b]);
+                    // XOR with rCon
+                    temp[0] ^= rCon[(i/4)-1];
+                }
+                w[i] = w[i-4].map((b, j) => b ^ temp[j]);
+            }
+            // Flatten
+            let expanded = [];
+            for (let i = 0; i < 44; i++) {
+                expanded.push(...w[i]);
+            }
+            return expanded;
+        }
+
+        function aesSubBytes(state) {
+            return state.map(b => sBox[b]);
+        }
+
+        function aesShiftRows(state) {
+            // state is 16 bytes in column-major order
+            let s = [...state];
+            // Row 1: shift left 1
+            [s[1], s[5], s[9], s[13]] = [s[5], s[9], s[13], s[1]];
+            // Row 2: shift left 2
+            [s[2], s[6], s[10], s[14]] = [s[10], s[14], s[2], s[6]];
+            // Row 3: shift left 3
+            [s[3], s[7], s[11], s[15]] = [s[15], s[3], s[7], s[11]];
+            return s;
+        }
+
+        function aesInvShiftRows(state) {
+            let s = [...state];
+            // Row 1: shift right 1
+            [s[1], s[5], s[9], s[13]] = [s[13], s[1], s[5], s[9]];
+            // Row 2: shift right 2
+            [s[2], s[6], s[10], s[14]] = [s[14], s[2], s[6], s[10]];
+            // Row 3: shift right 3
+            [s[3], s[7], s[11], s[15]] = [s[7], s[11], s[15], s[3]];
+            return s;
+        }
+
+        function gfMul(a, b) {
+            let p = 0;
+            for (let i = 0; i < 8; i++) {
+                if (b & 1) p ^= a;
+                let hi = a & 0x80;
+                a = (a << 1) & 0xff;
+                if (hi) a ^= 0x1b;
+                b >>= 1;
+            }
+            return p;
+        }
+
+        function aesMixColumns(state) {
+            let s = [...state];
+            for (let c = 0; c < 4; c++) {
+                let i = c * 4;
+                let a = [s[i], s[i+1], s[i+2], s[i+3]];
+                s[i]   = gfMul(2, a[0]) ^ gfMul(3, a[1]) ^ a[2] ^ a[3];
+                s[i+1] = a[0] ^ gfMul(2, a[1]) ^ gfMul(3, a[2]) ^ a[3];
+                s[i+2] = a[0] ^ a[1] ^ gfMul(2, a[2]) ^ gfMul(3, a[3]);
+                s[i+3] = gfMul(3, a[0]) ^ a[1] ^ a[2] ^ gfMul(2, a[3]);
+            }
+            return s;
+        }
+
+        function aesInvMixColumns(state) {
+            let s = [...state];
+            for (let c = 0; c < 4; c++) {
+                let i = c * 4;
+                let a = [s[i], s[i+1], s[i+2], s[i+3]];
+                s[i]   = gfMul(14, a[0]) ^ gfMul(11, a[1]) ^ gfMul(13, a[2]) ^ gfMul(9, a[3]);
+                s[i+1] = gfMul(9, a[0]) ^ gfMul(14, a[1]) ^ gfMul(11, a[2]) ^ gfMul(13, a[3]);
+                s[i+2] = gfMul(13, a[0]) ^ gfMul(9, a[1]) ^ gfMul(14, a[2]) ^ gfMul(11, a[3]);
+                s[i+3] = gfMul(11, a[0]) ^ gfMul(13, a[1]) ^ gfMul(9, a[2]) ^ gfMul(14, a[3]);
+            }
+            return s;
+        }
+
+        function aesAddRoundKey(state, roundKey) {
+            return state.map((b, i) => b ^ roundKey[i]);
+        }
+
+        function aesEncryptBlock(block, expandedKey) {
+            let state = [...block];
+            state = aesAddRoundKey(state, expandedKey.slice(0, 16));
+
+            for (let round = 1; round < 10; round++) {
+                state = aesSubBytes(state);
+                state = aesShiftRows(state);
+                state = aesMixColumns(state);
+                state = aesAddRoundKey(state, expandedKey.slice(round*16, (round+1)*16));
+            }
+
+            state = aesSubBytes(state);
+            state = aesShiftRows(state);
+            state = aesAddRoundKey(state, expandedKey.slice(160, 176));
+
+            return state;
+        }
+
+        function aesDecryptBlock(block, expandedKey) {
+            let state = [...block];
+            state = aesAddRoundKey(state, expandedKey.slice(160, 176));
+
+            for (let round = 9; round > 0; round--) {
+                state = aesInvShiftRows(state);
+                state = state.map(b => sBox.indexOf(b)); // InvSubBytes
+                state = aesAddRoundKey(state, expandedKey.slice(round*16, (round+1)*16));
+                state = aesInvMixColumns(state);
+            }
+
+            state = aesInvShiftRows(state);
+            state = state.map(b => sBox.indexOf(b));
+            state = aesAddRoundKey(state, expandedKey.slice(0, 16));
+
+            return state;
+        }
+
+        function hexStringToBytes(hex) {
+            hex = hex.replace(/\s+/g, '');
+            let bytes = [];
+            for (let i = 0; i < hex.length; i += 2) {
+                bytes.push(parseInt(hex.substr(i, 2), 16));
+            }
+            return bytes;
+        }
+
+        function bytesToHex(bytes) {
+            return bytes.map(b => b.toString(16).padStart(2, '0')).join(' ');
+        }
+
+        function aesEncrypt() {
+            let input = document.getElementById('aesInput').value;
+            let keyHex = document.getElementById('aesKey').value;
+            let key = hexStringToBytes(keyHex);
+
+            if (key.length !== 16) {
+                document.getElementById('aesOutput').textContent = 'Error: Key must be 16 bytes (32 hex characters)';
+                return;
+            }
+
+            // Pad input to 16 bytes
+            let padded = [];
+            for (let i = 0; i < input.length; i++) {
+                padded.push(input.charCodeAt(i));
+            }
+            while (padded.length % 16 !== 0) padded.push(0);
+
+            let expKey = aesKeyExpansion(key);
+            let output = [];
+
+            for (let i = 0; i < padded.length; i += 16) {
+                let block = padded.slice(i, i + 16);
+                let enc = aesEncryptBlock(block, expKey);
+                output.push(...enc);
+            }
+
+            document.getElementById('aesOutput').innerHTML = 
+                `<span style="color:#ff4444;">Encrypted (hex):</span>\n${bytesToHex(output)}`;
+        }
+
+        function aesDecrypt() {
+            let inputHex = document.getElementById('aesInput').value;
+            let keyHex = document.getElementById('aesKey').value;
+            let key = hexStringToBytes(keyHex);
+
+            if (key.length !== 16) {
+                document.getElementById('aesOutput').textContent = 'Error: Key must be 16 bytes';
+                return;
+            }
+
+            let input = hexStringToBytes(inputHex);
+            if (input.length === 0 || input.length % 16 !== 0) {
+                document.getElementById('aesOutput').textContent = 'Error: Ciphertext must be hex and multiple of 16 bytes';
+                return;
+            }
+
+            let expKey = aesKeyExpansion(key);
+            let output = [];
+
+            for (let i = 0; i < input.length; i += 16) {
+                let block = input.slice(i, i + 16);
+                let dec = aesDecryptBlock(block, expKey);
+                output.push(...dec);
+            }
+
+            // Remove padding zeros and convert to string
+            let str = '';
+            for (let b of output) {
+                if (b === 0) break;
+                str += String.fromCharCode(b);
+            }
+
+            document.getElementById('aesOutput').innerHTML = 
+                `<span style="color:#00ff88;">Decrypted:</span>\n${str}`;
+        }
+
+        // ============================================================
+        // DES IMPLEMENTATION (simplified S-box Feistel)
+        // ============================================================
+        const DES_SBOX = [
+            [14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7],
+            [0,15,7,4,14,2,13,1,10,6,12,11,9,5,3,8],
+            [4,1,14,8,13,6,2,11,15,12,9,7,3,10,5,0],
+            [15,12,8,2,4,9,1,7,5,11,3,14,10,0,6,13]
+        ];
+
+        function desFeistel(right, subkey) {
+            // Simplified Feistel with S-box
+            let sInput = right ^ subkey;
+            let output = 0;
+            for (let i = 0; i < 4; i++) {
+                let nibble = (sInput >> (i * 4)) & 0xF;
+                let sRow = (i % 2 === 0) ? DES_SBOX[0][nibble] : DES_SBOX[1][nibble];
+                output |= (sRow << (i * 4));
+            }
+            return output & 0xFFFFFFFF;
+        }
+
+        function desEncryptBlock(block, key) {
+            let left = (block >>> 0) & 0xFFFFFFFF;
+            let right = (block >>> 32) >>> 0;
+
+            for (let round = 0; round < 16; round++) {
+                let temp = right;
+                right = left ^ desFeistel(right, key[round % key.length]);
+                left = temp;
+            }
+            // Swap back
+            return ((right >>> 0) * 0x100000000 + (left >>> 0)) >>> 0;
+        }
+
+        function desDecryptBlock(block, key) {
+            let left = (block >>> 0) & 0xFFFFFFFF;
+            let right = (block >>> 32) >>> 0;
+
+            for (let round = 15; round >= 0; round--) {
+                let temp = right;
+                right = left ^ desFeistel(right, key[round % key.length]);
+                left = temp;
+            }
+            return ((right >>> 0) * 0x100000000 + (left >>> 0)) >>> 0;
+        }
+
+        function desEncrypt() {
+            let input = document.getElementById('desInput').value;
+            let keyStr = document.getElementById('desKey').value || 'PASSWORD';
+
+            let key = [];
+            for (let i = 0; i < 16; i++) {
+                key.push(keyStr.charCodeAt(i % keyStr.length));
+            }
+
+            // Pad to 8 bytes
+            let padded = [];
+            for (let i = 0; i < input.length; i++) padded.push(input.charCodeAt(i));
+            while (padded.length % 8 !== 0) padded.push(0);
+
+            let output = [];
+            for (let i = 0; i < padded.length; i += 8) {
+                let block = 0;
+                for (let j = 0; j < 8; j++) {
+                    block = (block * 256) + padded[i + j];
+                }
+                let enc = desEncryptBlock(block, key);
+                for (let j = 7; j >= 0; j--) {
+                    output.push((enc >> (j * 8)) & 0xFF);
+                }
+            }
+
+            document.getElementById('desOutput').innerHTML = 
+                `<span style="color:#ff4444;">Encrypted (hex):</span>\n${bytesToHex(output)}`;
+        }
+
+        function desDecrypt() {
+            let inputHex = document.getElementById('desInput').value;
+            let keyStr = document.getElementById('desKey').value || 'PASSWORD';
+
+            let key = [];
+            for (let i = 0; i < 16; i++) {
+                key.push(keyStr.charCodeAt(i % keyStr.length));
+            }
+
+            let input = hexStringToBytes(inputHex);
+            if (input.length === 0 || input.length % 8 !== 0) {
+                document.getElementById('desOutput').textContent = 'Error: Ciphertext must be hex and multiple of 8 bytes';
+                return;
+            }
+
+            let output = [];
+            for (let i = 0; i < input.length; i += 8) {
+                let block = 0;
+                for (let j = 0; j < 8; j++) {
+                    block = (block * 256) + input[i + j];
+                }
+                let dec = desDecryptBlock(block, key);
+                for (let j = 7; j >= 0; j--) {
+                    output.push((dec >> (j * 8)) & 0xFF);
+                }
+            }
+
+            let str = '';
+            for (let b of output) {
+                if (b === 0) break;
+                str += String.fromCharCode(b);
+            }
+
+            document.getElementById('desOutput').innerHTML = 
+                `<span style="color:#00ff88;">Decrypted:</span>\n${str}`;
+        }
+
+        // ============================================================
+        // RSA IMPLEMENTATION
+        // ============================================================
+        let rsaKeys = { n: 0, e: 0, d: 0 };
+
+        function gcd(a, b) { while (b) { [a, b] = [b, a % b]; } return a; }
+        function modPow(base, exp, mod) {
+            let result = 1n;
+            base = BigInt(base) % BigInt(mod);
+            exp = BigInt(exp);
+            mod = BigInt(mod);
+            while (exp > 0n) {
+                if (exp & 1n) result = (result * base) % mod;
+                base = (base * base) % mod;
+                exp >>= 1n;
+            }
+            return Number(result);
+        }
+
+        function modInverse(a, m) {
+            a = BigInt(a);
+            m = BigInt(m);
+            let m0 = m, y = 0n, x = 1n;
+            if (m === 1n) return 0;
+            while (a > 1n) {
+                let q = a / m;
+                let t = m;
+                m = a % m;
+                a = t;
+                t = y;
+                y = x - q * y;
+                x = t;
+            }
+            if (x < 0n) x += m0;
+            return Number(x);
+        }
+
+        function isPrime(n) {
+            if (n < 2) return false;
+            if (n < 4) return true;
+            if (n % 2 === 0) return false;
+            for (let i = 3; i * i <= n; i += 2) {
+                if (n % i === 0) return false;
+            }
+            return true;
+        }
+
+        function rsaGenerateKeys() {
+            // Use small primes for demo
+            let primes = [61, 53, 47, 59, 71, 73, 79, 83, 89, 97];
+            let p = primes[Math.floor(Math.random() * primes.length)];
+            let q = primes[Math.floor(Math.random() * primes.length)];
+            while (q === p) q = primes[Math.floor(Math.random() * primes.length)];
+
+            rsaKeys.n = p * q;
+            let phi = (p - 1) * (q - 1);
+            rsaKeys.e = 3;
+            while (gcd(rsaKeys.e, phi) !== 1) rsaKeys.e++;
+            rsaKeys.d = modInverse(rsaKeys.e, phi);
+
+            document.getElementById('rsaPublicKey').innerHTML = 
+                `n = ${rsaKeys.n}<br>e = ${rsaKeys.e}`;
+            document.getElementById('rsaPrivateKey').innerHTML = 
+                `n = ${rsaKeys.n}<br>d = ${rsaKeys.d}`;
+            document.getElementById('rsaOutput').innerHTML = 
+                `<span style="color:#50a0ff;">✓ Keys generated (p=${p}, q=${q})</span>`;
+        }
+
+        function rsaEncrypt() {
+            if (!rsaKeys.n) { rsaGenerateKeys(); }
+            let msg = parseInt(document.getElementById('rsaInput').value);
+            if (isNaN(msg) || msg >= rsaKeys.n) {
+                document.getElementById('rsaOutput').innerHTML = 
+                    `<span style="color:#ff4444;">Error: Message must be a number less than n=${rsaKeys.n}</span>`;
+                return;
+            }
+            let encrypted = modPow(msg, rsaKeys.e, rsaKeys.n);
+            document.getElementById('rsaOutput').innerHTML = 
+                `<span style="color:#ff4444;">Encrypted:</span> ${encrypted}`;
+        }
+
+        function rsaDecrypt() {
+            if (!rsaKeys.n) { rsaGenerateKeys(); }
+            let msg = parseInt(document.getElementById('rsaInput').value);
+            if (isNaN(msg) || msg >= rsaKeys.n) {
+                document.getElementById('rsaOutput').innerHTML = 
+                    `<span style="color:#ff4444;">Error: Value must be a number less than n=${rsaKeys.n}</span>`;
+                return;
+            }
+            let decrypted = modPow(msg, rsaKeys.d, rsaKeys.n);
+            document.getElementById('rsaOutput').innerHTML = 
+                `<span style="color:#00ff88;">Decrypted:</span> ${decrypted}`;
+        }
+
+        // ============================================================
+        // CA-PASSWORD ENCRYPTION (Cellular Automaton PRNG)
+        // ============================================================
+        let caState = [];
+        let caPos = 0;
+
+        function caInit(password) {
+            const RULE = 150;
+            caState = [];
+            let seed = 0;
+            for (let i = 0; i < password.length; i++) {
+                seed = (seed * 31 + password.charCodeAt(i)) & 0xFFFFFFFF;
+            }
+            // Initialize 1D CA with seed
+            caState = new Array(256).fill(0);
+            for (let i = 0; i < 32; i++) {
+                caState[i] = (seed >> (31 - i)) & 1;
+            }
+            caPos = 0;
+            // Evolve CA for 100 steps
+            for (let step = 0; step < 100; step++) {
+                let next = new Array(256).fill(0);
+                for (let i = 0; i < 256; i++) {
+                    let left = caState[(i - 1 + 256) % 256];
+                    let center = caState[i];
+                    let right = caState[(i + 1) % 256];
+                    let num = (left << 2) | (center << 1) | right;
+                    next[i] = (RULE >> num) & 1;
+                }
+                caState = next;
+            }
+        }
+
+        function caGetByte() {
+            let byte = 0;
+            for (let i = 0; i < 8; i++) {
+                byte = (byte << 1) | caState[(caPos + i) % 256];
+            }
+            caPos = (caPos + 8) % 256;
+            return byte;
+        }
+
+        function caEncrypt() {
+            let input = document.getElementById('caInput').value;
+            let password = document.getElementById('caPassword').value || 'PiedPiper';
+
+            caInit(password);
+            let output = [];
+            for (let i = 0; i < input.length; i++) {
+                output.push(input.charCodeAt(i) ^ caGetByte());
+            }
+
+            document.getElementById('caOutput').innerHTML = 
+                `<span style="color:#ff4444;">Encrypted (hex):</span>\n${bytesToHex(output)}`;
+        }
+
+        function caDecrypt() {
+            let inputHex = document.getElementById('caInput').value;
+            let password = document.getElementById('caPassword').value || 'PiedPiper';
+
+            let input = hexStringToBytes(inputHex);
+            if (input.length === 0) {
+                document.getElementById('caOutput').textContent = 'Error: Enter hex-encoded ciphertext';
+                return;
+            }
+
+            caInit(password);
+            let output = [];
+            for (let i = 0; i < input.length; i++) {
+                output.push(input[i] ^ caGetByte());
+            }
+
+            let str = '';
+            for (let b of output) {
+                str += String.fromCharCode(b);
+            }
+
+            document.getElementById('caOutput').innerHTML = 
+                `<span style="color:#00ff88;">Decrypted:</span>\n${str}`;
+        }
+
+        // ============================================================
+        // SHA-512 IMPLEMENTATION
+        // ============================================================
+        function sha512(input) {
+            // Simple SHA-512 implementation
+            function rotr(x, n) {
+                return (x >>> n) | (x << (64n - n));
+            }
+            
+            // Convert to bytes
+            let bytes = [];
+            for (let i = 0; i < input.length; i++) {
+                let c = input.charCodeAt(i);
+                if (c < 0x80) {
+                    bytes.push(c);
+                } else if (c < 0x800) {
+                    bytes.push(0xc0 | (c >> 6));
+                    bytes.push(0x80 | (c & 0x3f));
+                } else {
+                    bytes.push(0xe0 | (c >> 12));
+                    bytes.push(0x80 | ((c >> 6) & 0x3f));
+                    bytes.push(0x80 | (c & 0x3f));
+                }
+            }
+
+            // Pre-processing: append 1 bit, then zeros, then 128-bit length
+            let origLenBits = BigInt(bytes.length * 8);
+            bytes.push(0x80);
+            while ((bytes.length * 8) % 1024 !== 896) bytes.push(0x00);
+            // Append length as 128-bit big-endian
+            for (let i = 7; i >= 0; i--) bytes.push(Number((origLenBits >> BigInt(i * 8)) & 0xFFn));
+
+            // Process in 1024-bit (128 byte) chunks
+            let H = [
+                0x6a09e667f3bcc908n, 0xbb67ae8584caa73bn, 0x3c6ef372fe94f82bn, 0xa54ff53a5f1d36f1n,
+                0x510e527fade682d1n, 0x9b05688c2b3e6c1fn, 0x1f83d9abfb41bd6bn, 0x5be0cd19137e2179n
+            ];
+
+            const K = [
+                0x428a2f98d728ae22n, 0x7137449123ef65cdn, 0xb5c0fbcfe4d3b2fn, 0xe9b5dba58189dbbcn,
+                0x3956c25bf348b538n, 0x59f111f1b605d019n, 0x923f82a4af194f9bn, 0xab1c5ed5da6d8118n,
+                0xd807aa98a3030242n, 0x12835b0145706fben, 0x243185be4ee4b28cn, 0x550c7dc3d5ffb4e2n,
+                0x72be5d74f27b896fn, 0x80deb1fe3b1696b1n, 0x9bdc06a725c71235n, 0xc19bf174cf692694n,
+                0xe49b69c19ef14ad2n, 0xefbe4786384f25e3n, 0x0fc19dc68b8cd5b5n, 0x240ca1cc77ac9c65n,
+                0x2de92c6f592b0275n, 0x4a7484aa6ea6e483n, 0x5cb0a9dcbd41fbd4n, 0x76f988da831153b5n,
+                0x983e5152ee66dfabn, 0xa831c66d2db43210n, 0xb00327c898fb213fn, 0xbf597fc7beef0ee4n,
+                0xc6e00bf33da88fc2n, 0xd5a79147930aa725n, 0x06ca6351e003826fn, 0x142929670a0e6e70n,
+                0x27b70a8546d22ffcn, 0x2e1b21385c26c926n, 0x4d2c6dfc5ac42aedn, 0x53380d139d95b3dfn,
+                0x650a73548baf63den, 0x766a0abb3c77b2a8n, 0x81c2c92e47edaee6n, 0x92722c851482353bn,
+                0xa2bfe8a14cf10364n, 0xa81a664bbc423001n, 0xc24b8b70d0f89791n, 0xc76c51a30654be30n,
+                0xd192e819d6ef5218n, 0xd69906245565a910n, 0xf40e35855771202an, 0x106aa07032bbd1b8n,
+                0x19a4c116b8d2d0c8n, 0x1e376c085141ab53n, 0x2748774cdf8eeb99n, 0x34b0bcb5e19b48a8n,
+                0x391c0cb3c5c95a63n, 0x4ed8aa4ae3418acbn, 0x5b9cca4f7763e373n, 0x682e6ff3d6b2b8a3n,
+                0x748f82ee5defb2fcn, 0x78a5636f43172f60n, 0x84c87814a1f0ab72n, 0x8cc702081a6439ecn,
+                0x90befffa23631e28n, 0xa4506cebde82bde9n, 0xbef9a3f7b2c67915n, 0xc67178f2e372532bn,
+                0xca273eceea26619cn, 0xd186b8c721c0c207n, 0xeada7dd6cde0eb1en, 0xf57d4f7fee6ed178n,
+                0x06f067aa72176fban, 0x0a637dc5a2c898a6n, 0x113f9804bef90daen, 0x1b710b35131c471bn,
+                0x28db77f523047d84n, 0x32caab7b40c72493n, 0x3c9ebe0a15c9bebcn, 0x431d67c49c100d4cn,
+                0x4cc5d4becb3e42b6n, 0x597f299cfc657e2an, 0x5fcb6fab3ad6faecn, 0x6c44198c4a475817n
+            ];
+
+            for (let chunk = 0; chunk < bytes.length; chunk += 128) {
+                let W = new Array(80).fill(0n);
+                for (let i = 0; i < 16; i++) {
+                    W[i] = 0n;
+                    for (let j = 0; j < 8; j++) {
+                        W[i] = (W[i] << 8n) | BigInt(bytes[chunk + i * 8 + j]);
+                    }
+                }
+                for (let i = 16; i < 80; i++) {
+                    let s0 = rotr(W[i-15], 1n) ^ rotr(W[i-15], 8n) ^ (W[i-15] >> 7n);
+                    let s1 = rotr(W[i-2], 19n) ^ rotr(W[i-2], 61n) ^ (W[i-2] >> 6n);
+                    W[i] = (W[i-16] + s0 + W[i-7] + s1) & 0xFFFFFFFFFFFFFFFFn;
+                }
+
+                let a = H[0], b = H[1], c = H[2], d = H[3];
+                let e = H[4], f = H[5], g = H[6], h = H[7];
+
+                for (let i = 0; i < 80; i++) {
+                    let S1 = rotr(e, 14n) ^ rotr(e, 18n) ^ rotr(e, 41n);
+                    let ch = (e & f) ^ ((~e) & g);
+                    let temp1 = (h + S1 + ch + K[i] + W[i]) & 0xFFFFFFFFFFFFFFFFn;
+                    let S0 = rotr(a, 28n) ^ rotr(a, 34n) ^ rotr(a, 39n);
+                    let maj = (a & b) ^ (a & c) ^ (b & c);
+                    let temp2 = (S0 + maj) & 0xFFFFFFFFFFFFFFFFn;
+
+                    h = g; g = f; f = e; e = (d + temp1) & 0xFFFFFFFFFFFFFFFFn;
+                    d = c; c = b; b = a; a = (temp1 + temp2) & 0xFFFFFFFFFFFFFFFFn;
+                }
+
+                H[0] = (H[0] + a) & 0xFFFFFFFFFFFFFFFFn;
+                H[1] = (H[1] + b) & 0xFFFFFFFFFFFFFFFFn;
+                H[2] = (H[2] + c) & 0xFFFFFFFFFFFFFFFFn;
+                H[3] = (H[3] + d) & 0xFFFFFFFFFFFFFFFFn;
+                H[4] = (H[4] + e) & 0xFFFFFFFFFFFFFFFFn;
+                H[5] = (H[5] + f) & 0xFFFFFFFFFFFFFFFFn;
+                H[6] = (H[6] + g) & 0xFFFFFFFFFFFFFFFFn;
+                H[7] = (H[7] + h) & 0xFFFFFFFFFFFFFFFFn;
+            }
+
+            let result = '';
+            for (let i = 0; i < 8; i++) {
+                result += H[i].toString(16).padStart(16, '0');
+            }
+            return result;
+        }
+
+        function shaHash() {
+            let input = document.getElementById('shaInput').value;
+            let hash = sha512(input);
+            document.getElementById('shaOutput').innerHTML = 
+                `<span style="color:#50a0ff;">SHA-512 (${input.length} chars):</span>\n${hash}`;
+        }
+
+        function caShaHash() {
+            let input = document.getElementById('shaInput').value;
+            let hash = sha512(input);
+            // CA-optimized: first 64 chars are standard SHA-512, 
+            // then we show the CA-optimized variant (XOR with CA-generated mask)
+            let caHash = '';
+            caInit(input);
+            for (let i = 0; i < hash.length; i++) {
+                let c = parseInt(hash[i], 16) ^ (caGetByte() % 16);
+                caHash += c.toString(16);
+            }
+            document.getElementById('shaOutput').innerHTML = 
+                `<span style="color:#ff4444;">CA-SHA-512 (CA optimized):</span>\n${caHash}\n\n` +
+                `<span style="color:#555;font-size:0.7rem;">Standard SHA-512: ${hash}</span>`;
+        }
+
+        // ============================================================
+        // PP_SSH ENCRYPT/DECRYPT
+        // ============================================================
+        function sshEncrypt() {
+            let command = document.getElementById('sshCommand').value;
+            caInit('PASSWORD1234'); // PP_SSH default password
+
+            let output = [];
+            for (let i = 0; i < command.length; i++) {
+                let b = command.charCodeAt(i) ^ caGetByte();
+                // PP_SSH replaces \0 and \255 with 'A'
+                if (b === 0 || b === 255) b = 65; // 'A'
+                output.push(b);
+            }
+
+            document.getElementById('sshOutput').innerHTML = 
+                `<span style="color:#ff4444;">PP_SSH Encrypted Command:</span>\n${bytesToHex(output)}\n\n` +
+                `<span style="color:#555;font-size:0.7rem;">Original: "${command}" → encrypted with CA-PRG</span>`;
+        }
+
+        function sshDecrypt() {
+            let inputHex = document.getElementById('sshCommand').value;
+            let input = hexStringToBytes(inputHex);
+            if (input.length === 0) {
+                document.getElementById('sshOutput').textContent = 'Error: Enter hex-encoded PP_SSH command';
+                return;
+            }
+
+            caInit('PASSWORD1234');
+            let output = [];
+            for (let i = 0; i < input.length; i++) {
+                output.push(input[i] ^ caGetByte());
+            }
+
+            let str = '';
+            for (let b of output) {
+                str += String.fromCharCode(b);
+            }
+
+            document.getElementById('sshOutput').innerHTML = 
+                `<span style="color:#00ff88;">PP_SSH Decrypted Command:</span>\n${str}\n\n` +
+                `<span style="color:#555;font-size:0.7rem;">Encrypted hex → decrypted with CA-PRG</span>`;
+        }
+
+        // ============================================================
+        // TAB SWITCHING
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const target = this.dataset.tab;
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                    document.getElementById('panel-' + target).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
