@@ -14,12 +14,18 @@ file_manager *openFile(const char *filename, int flags, int type)
         errno = ENOMEM;
         return NULL;
     }
-    if (type == WRITE_TYPE)
-        fp->fileptr = open(filename, O_RDWR | O_CREAT | __O_LARGEFILE, 0666);
-    else if (type == READ_TYPE)
-        fp->fileptr = open(filename, O_RDWR | __O_LARGEFILE);
-
+    fp->buffer = 0;
+    fp->waitlength = 0;
+    fp->FLAGS = flags;
     fp->file_type = type;
+
+    if (type == WRITE_TYPE)
+        fp->fileptr = open(filename, flags | O_LARGEFILE, 0666);
+    else if (type == READ_TYPE)
+        fp->fileptr = open(filename, flags | O_LARGEFILE);
+    else
+        fp->fileptr = -1;
+
     // allocation done
     if (fp->fileptr < 0)
     {

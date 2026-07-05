@@ -1,6 +1,12 @@
 #ifndef __FILEHANDLER___
 #define __FILEHANDLER___
 
+#include <fcntl.h>
+
+#ifndef O_LARGEFILE
+#define O_LARGEFILE 0
+#endif
+
 #define READ_TYPE 0
 #define WRITE_TYPE 1
 

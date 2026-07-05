@@ -603,9 +603,128 @@
         </footer>
     </div>
 
-    <script src="https://unpkg.com/@solana/web3.js@1/lib/index.iife.min.js"></script>
+    <script src="https://unpkg.com/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
     <script src="shared/solana-integration.js" data-panel="none" data-theme="green"></script>
     <script>
+        /* ── Helius DAS realtime wallet stats ─────────────────── */
+        (function initDas() {
+            const keyInput = document.getElementById('dasApiKey');
+            const ownerInput = document.getElementById('dasOwner');
+            keyInput.value = localStorage.getItem('pp-helius-key') || '';
+            ownerInput.value = localStorage.getItem('pp-das-owner') || '';
+            keyInput.addEventListener('change', () => localStorage.setItem('pp-helius-key', keyInput.value.trim()));
+            ownerInput.addEventListener('change', () => localStorage.setItem('pp-das-owner', ownerInput.value.trim()));
+            // Auto-fill owner from the connected wallet.
+            setInterval(() => {
+                try {
+                    const pk = window.PiedPiperSolana && window.PiedPiperSolana.getState().publicKey;
+                    if (pk && !ownerInput.value) ownerInput.value = pk.toString();
+                } catch (_) { /* wallet not ready */ }
+            }, 2000);
+        })();
+
+        let dasTimer = null;
+
+        function dasSetStatus(msg, isErr) {
+            const el = document.getElementById('dasStatus');
+            el.textContent = msg;
+            el.className = 'das-status' + (isErr ? ' err' : '');
+        }
+
+        function dasFmt(n, dp) {
+            if (n === null || n === undefined || Number.isNaN(n)) return '—';
+            return Number(n).toLocaleString('en-US', { maximumFractionDigits: dp === undefined ? 4 : dp });
+        }
+
+        async function dasRefresh() {
+            const apiKey = document.getElementById('dasApiKey').value.trim();
+            const owner = document.getElementById('dasOwner').value.trim();
+            if (!apiKey) return dasSetStatus('Missing Helius API key — get one free at helius.dev', true);
+            if (!owner) return dasSetStatus('Missing owner address — connect a wallet or paste one', true);
+            dasSetStatus('Fetching assets via Helius DAS…');
+            try {
+                const res = await fetch('https://mainnet.helius-rpc.com/?api-key=' + encodeURIComponent(apiKey), {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0', id: 'pp-das', method: 'searchAssets',
+                        params: {
+                            ownerAddress: owner, tokenType: 'all', page: 1, limit: 1000,
+                            displayOptions: { showNativeBalance: true, showZeroBalance: false },
+                        },
+                    }),
+                });
+                const json = await res.json();
+                if (json.error) throw new Error(json.error.message || JSON.stringify(json.error));
+                const items = (json.result && json.result.items) || [];
+                const native = json.result && json.result.nativeBalance;
+
+                const fungible = [];
+                let nftCount = 0;
+                for (const it of items) {
+                    if (it.interface === 'FungibleToken' || it.interface === 'FungibleAsset') {
+                        const info = it.token_info || {};
+                        const dec = info.decimals || 0;
+                        const bal = (info.balance || 0) / Math.pow(10, dec);
+                        const price = info.price_info ? info.price_info.price_per_token : null;
+                        fungible.push({
+                            symbol: info.symbol || (it.content && it.content.metadata && it.content.metadata.symbol) || '?',
+                            mint: it.id, balance: bal, price: price,
+                            usd: info.price_info ? info.price_info.total_price : (price ? price * bal : null),
+                        });
+                    } else {
+                        nftCount++;
+                    }
+                }
+                fungible.sort((a, b) => (b.usd || 0) - (a.usd || 0));
+
+                const solBal = native ? native.lamports / 1e9 : null;
+                const solUsd = native && native.total_price ? native.total_price : 0;
+                const totalUsd = fungible.reduce((s, t) => s + (t.usd || 0), 0) + solUsd;
+
+                document.getElementById('dasTotalUsd').textContent = '$' + dasFmt(totalUsd, 2);
+                document.getElementById('dasSolBal').textContent = solBal === null ? '—' : dasFmt(solBal, 4) + ' ◎';
+                document.getElementById('dasTokenCount').textContent = String(fungible.length);
+                document.getElementById('dasNftCount').textContent = String(nftCount);
+
+                const tbody = document.getElementById('dasTbody');
+                tbody.innerHTML = '';
+                for (const t of fungible.slice(0, 50)) {
+                    const tr = document.createElement('tr');
+                    const cells = [
+                        ['sym', t.symbol],
+                        ['num', dasFmt(t.balance)],
+                        ['num', t.price === null ? '—' : '$' + dasFmt(t.price, 6)],
+                        ['num usd', t.usd === null ? '—' : '$' + dasFmt(t.usd, 2)],
+                        ['', t.mint.slice(0, 4) + '…' + t.mint.slice(-4)],
+                    ];
+                    for (const [cls, text] of cells) {
+                        const td = document.createElement('td');
+                        if (cls) td.className = cls;
+                        td.textContent = text;
+                        tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                }
+                document.getElementById('dasTable').style.display = fungible.length ? 'table' : 'none';
+                dasSetStatus('Updated ' + new Date().toLocaleTimeString() + ' · ' + items.length + ' assets scanned' + (dasTimer ? ' · auto-refresh on' : ''));
+            } catch (err) {
+                dasSetStatus('DAS error: ' + (err.message || err), true);
+            }
+        }
+
+        function dasToggleAuto() {
+            const btn = document.getElementById('dasAutoBtn');
+            if (dasTimer) {
+                clearInterval(dasTimer); dasTimer = null;
+                btn.textContent = '▶ Auto 20s';
+            } else {
+                dasTimer = setInterval(dasRefresh, 20000);
+                btn.textContent = '⏸ Stop';
+                dasRefresh();
+            }
+        }
+
         function recordHubProof() {
             const cards = Array.from(document.querySelectorAll('.system-card h2, .sim-card h3'))
                 .map((node) => node.textContent.trim());

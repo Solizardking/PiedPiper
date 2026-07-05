@@ -29,9 +29,12 @@ See `SOLANA_INTEGRATION.md` for the page map, supported clusters, proof behavior
 Native components are buildable locally:
 
 ```bash
+npm test
 make -C PP_HASH test
 make -C PP_SSH
 ```
+
+The browser demos are static pages. `npm test` verifies local HTML references and CDN dependency pins; `npm start` serves the hub on port 4173 for localhost-only browser APIs such as Web Crypto.
 
 # Team Division for Project Topics 
 

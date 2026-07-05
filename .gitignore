@@ -1,4 +1,21 @@
-.vercel
-.env
-node_modules/
 .DS_Store
+.env
+.vercel/
+.playwright-mcp/
+node_modules/
+.npm-cache/
+
+# Native build outputs
+*.o
+*.out
+*.dSYM/
+a.out
+compress
+decompress
+encrypt
+decrypt
+PP_HASH/hashF
+PP_HASH/caHash
+PP_SSH/client
+PP_SSH/server
+Compression/Arithmetic/Static/C/executable

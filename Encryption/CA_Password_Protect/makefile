@@ -1,14 +1,21 @@
-encrypt: \
-				prg.o \
-				util.o \
-				encryptor.h \
-				encryptor.c \
-	
-	gcc -o encrypt $^
-	rm -f *.o
+CC ?= cc
+CFLAGS ?= -Wall -Wextra -g
 
-util.o: util.h 
-	gcc -g -c util.c
+.PHONY: all clean
 
-prg.o: prg.h util.o
-	gcc -g -c prg.c 
+all: encrypt
+
+encrypt: prg.o util.o encryptor.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+util.o: util.h util.c
+	$(CC) $(CFLAGS) -c -o $@ util.c
+
+prg.o: prg.h prg.c util.h
+	$(CC) $(CFLAGS) -c -o $@ prg.c
+
+encryptor.o: encryptor.h encryptor.c prg.h
+	$(CC) $(CFLAGS) -c -o $@ encryptor.c
+
+clean:
+	rm -f *.o encrypt

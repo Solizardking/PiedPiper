@@ -5,6 +5,9 @@
 
 #define MASK(x) (1L << (PRECISION - ((x) + 1)))
 
+ul total_size;
+prob_t *table[256];
+
 void initTable()
 {
     for (int x = 0; x < 256; x++)
@@ -52,7 +55,7 @@ void WriteHeader(file_manager *bfpOut)
     previous = 0;
     ul i = 0;
     while (i < PRECISION - 2)
-        insertBit((unsigned char)(MASK(i++) & previous != 0), bfpOut);
+        insertBit((unsigned char)((MASK(i++) & previous) != 0), bfpOut);
 }
 
 void scaleTable()

@@ -1,23 +1,27 @@
-all: decrypt.o encrypt.o expandKeys.o standardDefinitions.o
-	make encrypt decrypt
+CC ?= cc
+CFLAGS ?= -Wall -Wextra -std=c11
+
+.PHONY: all clean
+
+all: encrypt decrypt
 
 encrypt: encrypt.o expandKeys.o standardDefinitions.o
-	gcc -o encrypt encrypt.o expandKeys.o standardDefinitions.o
+	$(CC) $(CFLAGS) -o $@ $^
 
 decrypt: decrypt.o expandKeys.o standardDefinitions.o
-	gcc -o decrypt decrypt.o expandKeys.o standardDefinitions.o
+	$(CC) $(CFLAGS) -o $@ $^
 
-encrypt.o: encrypt.c
-	gcc -c encrypt.c
+encrypt.o: encrypt.c standardDefinitions.h expandKeys.h
+	$(CC) $(CFLAGS) -c -o $@ encrypt.c
 
-decrypt.o: decrypt.c
-	gcc -c decrypt.c
+decrypt.o: decrypt.c standardDefinitions.h expandKeys.h
+	$(CC) $(CFLAGS) -c -o $@ decrypt.c
 
-expandKeys.o: expandKeys.c
-	gcc -c expandKeys.c
+expandKeys.o: expandKeys.c expandKeys.h standardDefinitions.h
+	$(CC) $(CFLAGS) -c -o $@ expandKeys.c
 
-standardDefinitions.o: standardDefinitions.c
-	gcc -c standardDefinitions.c
+standardDefinitions.o: standardDefinitions.c standardDefinitions.h
+	$(CC) $(CFLAGS) -c -o $@ standardDefinitions.c
 
 clean:
-	rm decrypt.o encrypt.o expandKeys.o standardDefinitions.o encrypt decrypt
+	rm -f decrypt.o encrypt.o expandKeys.o standardDefinitions.o encrypt decrypt

@@ -15,7 +15,7 @@
 
 int underflow_bits = 0;
 
-void updateLowHigh(ul *low, ul *high, char ch)
+void updateLowHigh(ul *low, ul *high, unsigned char ch)
 {
     ul range, rescale;
     range = (*high) - (*low) + 1;
@@ -33,11 +33,11 @@ void updateFlow(ul *low, ul *high, file_manager *fm)
     {
         if ((MASK(0) & *high) == (MASK(0) & *low)) // OVERFLOW
         {
-            insertBit((unsigned char)(*high & MASK(0) != 0), fm);
+            insertBit((unsigned char)((*high & MASK(0)) != 0), fm);
             while (underflow_bits > 0)
             {
                 underflow_bits--;
-                insertBit((*high & MASK(0) == 0), fm);
+                insertBit((unsigned char)((*high & MASK(0)) == 0), fm);
             }
         }
         else if ((*low & MASK(1)) && !(*high & MASK(1))) // underflow
@@ -96,7 +96,7 @@ int assignFrequencies(file_manager *fm)
         {
             break;
         }
-        printf("Count is %d\n", count);
+        printf("Count is %lu\n", count);
         table[c]->freq = count;
         total_size += count;
     }
@@ -113,10 +113,20 @@ void staticDecompression(char *source_filename, int permissionsSource, char *des
 {
     file_manager *inFile = openFile(source_filename, permissionsSource, READ_TYPE);
     file_manager *outFile = openFile(dest_filename, permissionsDest, WRITE_TYPE);
+    if (!inFile || !outFile)
+    {
+        if (inFile) closeFile(inFile);
+        if (outFile) closeFile(outFile);
+        return;
+    }
+
     if (!assignFrequencies(inFile))
     {
         printf("Error : Return 0 \n");
     }
+
+    closeFile(inFile);
+    closeFile(outFile);
 }
 
 int main(int argc, char *argv[])
@@ -126,7 +136,7 @@ int main(int argc, char *argv[])
         printf("Error :: Invalid inputs.");
         return 1;
     }
-    staticDecompression(argv[1], O_RDWR | __O_LARGEFILE, argv[2], O_RDWR | O_CREAT | O_TRUNC);
+    staticDecompression(argv[1], O_RDWR | O_LARGEFILE, argv[2], O_RDWR | O_CREAT | O_TRUNC);
 
     return 0;
 }

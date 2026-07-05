@@ -12,6 +12,8 @@
 #include <string.h>
 #include "help.c"
 
+void encode(int argc, char *argv[]);
+
 /* return 0 = success | return 1 = error */
 int main(int argc, char *argv[])
 {

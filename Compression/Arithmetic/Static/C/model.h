@@ -14,8 +14,8 @@ typedef struct prob_elem
     int sfreq;        // scaled frequency
 } prob_t;
 
-ul total_size;
-prob_t *table[256];
+extern ul total_size;
+extern prob_t *table[256];
 
 void initTable();
 void insertChar(const unsigned char ch); // how to make sure it is static insertion??

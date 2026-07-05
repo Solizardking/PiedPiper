@@ -1,16 +1,28 @@
-compress : \
-	filehandler.o \
-	model.o	\
-	compressor.c
+CC ?= cc
+CFLAGS ?= -Wall -Wextra -std=c11 -g
+COMMON_OBJS = filehandler.o model.o
 
-	gcc -o compress $^
+.PHONY: all clean
 
-filehandler.o : filehandler.h filehandler.c 
-	gcc -c -g filehandler.c
+all: compress decompress
 
-model.o : model.h model.c 
-	gcc -c -g model.c
+compress: $(COMMON_OBJS) compressor.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+decompress: $(COMMON_OBJS) decompressor.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+filehandler.o: filehandler.h filehandler.c
+	$(CC) $(CFLAGS) -c -o $@ filehandler.c
+
+model.o: model.h model.c filehandler.h
+	$(CC) $(CFLAGS) -c -o $@ model.c
+
+compressor.o: compressor.c filehandler.h model.h
+	$(CC) $(CFLAGS) -c -o $@ compressor.c
+
+decompressor.o: decompressor.c filehandler.h model.h
+	$(CC) $(CFLAGS) -c -o $@ decompressor.c
 
 clean:
-	rm -rf *.o 
-
+	rm -f *.o compress decompress

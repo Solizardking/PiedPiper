@@ -9,7 +9,7 @@ var next_gen = []
 var grid;
 var generation = 0;
 
-var code = [0, 0.25, 1, 0];
+var burnWeights = [0, 0.25, 1, 0];
 
 
 function make2DArray(r, c) {
@@ -39,7 +39,7 @@ function update() {
                     }
                 }
                 else {
-                    let sum = code[grid[i - 1][j]] + code[grid[i - 1][j - 1]] + code[grid[i][j - 1]] + code[grid[i][j + 1]] + code[grid[i + 1][j]] + code[grid[i + 1][j + 1]] + code[grid[i + 1][j - 1]] + code[grid[i - 1][j + 1]];
+                    let sum = burnWeights[grid[i - 1][j]] + burnWeights[grid[i - 1][j - 1]] + burnWeights[grid[i][j - 1]] + burnWeights[grid[i][j + 1]] + burnWeights[grid[i + 1][j]] + burnWeights[grid[i + 1][j + 1]] + burnWeights[grid[i + 1][j - 1]] + burnWeights[grid[i - 1][j + 1]];
                     // // UPDATION RULES HERE
 
                     // if (sum == 4) {
@@ -52,7 +52,7 @@ function update() {
                     //     next_grid[i][j] = 0;
                     // }
 
-                    sum = sum / 5.0 + (code[grid[i][j]]) / 4.0;
+                    sum = sum / 5.0 + (burnWeights[grid[i][j]]) / 4.0;
                     if (sum >= 0.5) {
                         next_grid[i][j] = 2;
                     }

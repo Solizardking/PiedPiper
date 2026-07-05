@@ -15,4 +15,6 @@ int help()
         perror("");
         return 1;
     }
+
+    return 0;
 }

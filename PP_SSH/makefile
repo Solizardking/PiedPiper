@@ -18,7 +18,6 @@ prg.o: prg.h prg.c util.c util.h makefile
 	$(CC) $(CFLAGS) -c prg.c
 
 clean:
-	rm -f *.o client server tmp_*.txt
-
+	rm -rf *.o client server client.dSYM server.dSYM tmp_*.txt
 
 

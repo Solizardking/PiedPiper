@@ -1,23 +1,30 @@
-compress: huffman.o minHeap.o compress.o huffman.h minHeap.h
-	gcc -o compress huffman.o minHeap.o compress.o
+CC ?= cc
+CFLAGS ?= -Wall -Wextra -std=c11
 
-decompress: huffman.o codeSearchTree.o decompress.o huffman.h codeSearchTree.h
-	gcc -o decompress huffman.o codeSearchTree.o decompress.o
+.PHONY: all clean
 
-huffman.o: huffman.c
-	gcc -c huffman.c
+all: compress decompress
 
-minHeap.o: minHeap.c
-	gcc -c minHeap.c
+compress: huffman.o minHeap.o compress.o
+	$(CC) $(CFLAGS) -o $@ $^
 
-compress.o: compress.c
-	gcc -c compress.c
+decompress: huffman.o codeSearchTree.o decompress.o
+	$(CC) $(CFLAGS) -o $@ $^
 
-decompress.o: decompress.c
-	gcc -c decompress.c
+huffman.o: huffman.c huffman.h
+	$(CC) $(CFLAGS) -c -o $@ huffman.c
 
-codeSearchTree.o: codeSearchTree.c
-	gcc -c codeSearchTree.c
+minHeap.o: minHeap.c minHeap.h
+	$(CC) $(CFLAGS) -c -o $@ minHeap.c
+
+compress.o: compress.c huffman.h minHeap.h
+	$(CC) $(CFLAGS) -c -o $@ compress.c
+
+decompress.o: decompress.c huffman.h codeSearchTree.h
+	$(CC) $(CFLAGS) -c -o $@ decompress.c
+
+codeSearchTree.o: codeSearchTree.c codeSearchTree.h
+	$(CC) $(CFLAGS) -c -o $@ codeSearchTree.c
 
 clean:
-	rm *.o compress decompress
+	rm -f *.o compress decompress

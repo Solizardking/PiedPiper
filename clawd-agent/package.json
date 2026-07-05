@@ -1,0 +1,17 @@
+{
+  "name": "piedpiper-clawd-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Clawd terminal wallet agent — natural-language Solana wallet chat, Helius DAS realtime stats, and price-capped confirmation-gated token burns.",
+  "type": "module",
+  "bin": { "clawd-agent": "./agent.mjs" },
+  "scripts": {
+    "start": "node agent.mjs",
+    "check": "node agent.mjs --check"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.95.0"
+  }
+}

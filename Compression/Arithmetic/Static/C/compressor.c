@@ -15,7 +15,7 @@
 
 int underflow_bits = 0;
 
-void updateLowHigh(ul *low, ul *high, char ch)
+void updateLowHigh(ul *low, ul *high, unsigned char ch)
 {
     ul range, rescale;
     range = (*high) - (*low) + 1;
@@ -33,11 +33,11 @@ void updateFlow(ul *low, ul *high, file_manager *fm)
     {
         if ((MASK(0) & *high) == (MASK(0) & *low)) // OVERFLOW
         {
-            insertBit((unsigned char)(*high & MASK(0) != 0), fm);
+            insertBit((unsigned char)((*high & MASK(0)) != 0), fm);
             while (underflow_bits > 0)
             {
                 underflow_bits--;
-                insertBit((*high & MASK(0) == 0), fm);
+                insertBit((unsigned char)((*high & MASK(0)) == 0), fm);
             }
         }
         else if ((*low & MASK(1)) && !(*high & MASK(1))) // underflow
@@ -76,7 +76,7 @@ void staticCompression(char *source_filename, int permissionsSource, char *dest_
         char *buff = (char *)malloc(read_size);
         printf("r o : %ld\n", read(fptr, buff, read_size));
 
-        for (int x = 0; x < read_size; x++)
+        for (ul x = 0; x < read_size; x++)
         {
             insertChar(buff[x]);
         }
@@ -88,14 +88,14 @@ void staticCompression(char *source_filename, int permissionsSource, char *dest_
     ul high = (1L << PRECISION) - 1;
     ul low = 0;
 
-    lseek64(fptr, (ul)0, SEEK_SET);
+    lseek(fptr, (ul)0, SEEK_SET);
     rem_size = file_size;
     while (rem_size > 0)
     {
         ul read_size = MIN(rem_size, BUFFER_SIZE);
         char *buff = (char *)malloc(read_size);
         read(fptr, buff, read_size);
-        for (int x = 0; x < read_size; x++)
+        for (ul x = 0; x < read_size; x++)
         {
             // code for updating high and low
             updateLowHigh(&low, &high, buff[x]);
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
         printf("Error :: Invalid inputs.");
         return 1;
     }
-    staticCompression(argv[1], O_RDWR | __O_LARGEFILE, argv[2], O_RDWR | O_CREAT | O_TRUNC);
+    staticCompression(argv[1], O_RDWR | O_LARGEFILE, argv[2], O_RDWR | O_CREAT | O_TRUNC);
     // printf("Compression Done...\n");
     return 0;
 }
