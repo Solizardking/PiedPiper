@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PiedPiper Encrypted Chat on Solana</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/solana-integration.css">
+    <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+    <canvas id="cipherField" aria-hidden="true"></canvas>
+
+    <main class="chat-shell">
+        <aside class="chat-sidebar">
+            <a class="back-link" href="../index.html">&larr; PiedPiper Hub</a>
+            <div class="module-kicker">Solana Memo Transport</div>
+            <h1>Encrypted Chat</h1>
+            <p class="lineage">CA-PRG lineage · AES-128 room keys · compressed ciphertext envelopes</p>
+
+            <div data-solana-mount></div>
+
+            <form class="room-form" id="roomForm">
+                <label for="roomInput">Room</label>
+                <input id="roomInput" name="room" autocomplete="off" spellcheck="false" maxlength="64" value="piedpiper-devnet">
+
+                <label for="secretInput">Secret</label>
+                <input id="secretInput" name="secret" type="password" autocomplete="new-password" spellcheck="false" maxlength="96">
+
+                <label for="aliasInput">Alias</label>
+                <input id="aliasInput" name="alias" autocomplete="off" spellcheck="false" maxlength="32" placeholder="optional">
+
+                <div class="room-actions">
+                    <button class="icon-button" type="submit" id="loadRoomBtn" title="Load room">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.66-5.66M20 12a8 8 0 0 1-13.66 5.66"/><path d="M18 4v4h-4M6 20v-4h4"/></svg>
+                        <span>Load</span>
+                    </button>
+                    <button class="icon-button secondary" type="button" id="syncBtn" title="Sync messages">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.25"/><path d="M3 12A9 9 0 0 1 18.5 5.75"/><path d="M6 18H3v3M18 6h3V3"/></svg>
+                        <span>Sync</span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="room-meter">
+                <span>Room Hash</span>
+                <strong id="roomHash">--</strong>
+            </div>
+            <div class="room-meter">
+                <span>Envelope</span>
+                <strong><span id="memoSize">0</span> / 900 bytes</strong>
+            </div>
+        </aside>
+
+        <section class="chat-panel" aria-label="Encrypted chat transcript">
+            <header class="chat-header">
+                <div>
+                    <div class="module-kicker">PiedPiper Secure Channel</div>
+                    <h2 id="roomTitle">piedpiper-devnet</h2>
+                </div>
+                <div class="chat-status" id="chatStatus" aria-live="polite">Ready</div>
+            </header>
+
+            <div class="message-list" id="messageList">
+                <div class="empty-state">
+                    <strong>No decrypted messages</strong>
+                    <span>Load a room to scan recent Solana Memo transactions.</span>
+                </div>
+            </div>
+
+            <form class="composer" id="composerForm">
+                <textarea id="messageInput" maxlength="420" rows="4" placeholder="Write encrypted message"></textarea>
+                <div class="composer-actions">
+                    <span id="charCount">0 / 420</span>
+                    <button class="send-button" type="submit" id="sendBtn" title="Send encrypted message">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                        <span>Send</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/@solana/web3.js@1/lib/index.iife.min.js"></script>
+    <script src="../shared/solana-integration.js" data-theme="green"></script>
+    <script src="chat.js"></script>
+</body>
+</html>

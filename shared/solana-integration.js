@@ -432,6 +432,9 @@
         setCluster: setCluster,
         refreshChainInfo: refreshChainInfo,
         recordProof: recordProof,
+        sendMemo: sendMemo,
+        memoExplorerUrl: memoExplorerUrl,
+        memoProgramId: MEMO_PROGRAM_ID,
         hashText: sha256Hex,
         getState: function () {
             return {
