@@ -139,6 +139,47 @@
         }
         .section-title .accent { background:linear-gradient(135deg,#9945FF,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 
+        /* ── Helius DAS wallet stats ───────────────────────────── */
+        .das-section {
+            margin:20px 0; padding:24px;
+            background:var(--panel-deep);
+            border:1px solid rgba(20,241,149,0.1); border-radius:18px;
+        }
+        .das-section h2 { font-size:1.1rem; }
+        .das-section h2 span { background:linear-gradient(135deg,#14F195,#9945FF); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        .das-section .desc { color:#666; font-size:0.75rem; margin:6px 0 14px; }
+        .das-controls { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+        .das-controls input {
+            flex:1; min-width:200px; padding:8px 12px;
+            background:rgba(0,0,0,0.4); border:1px solid rgba(153,69,255,0.15);
+            border-radius:8px; color:#ddd; font-family:var(--mono); font-size:0.68rem;
+        }
+        .das-controls input:focus { outline:none; border-color:rgba(20,241,149,0.4); }
+        .das-controls button {
+            padding:8px 18px; border-radius:8px; cursor:pointer;
+            background:linear-gradient(135deg,rgba(20,241,149,0.12),rgba(153,69,255,0.1));
+            border:1px solid rgba(20,241,149,0.25); color:#fff;
+            font-family:var(--mono); font-size:0.68rem; transition:all 0.25s;
+        }
+        .das-controls button:hover { border-color:var(--sol-teal); }
+        .das-summary { display:flex; gap:24px; flex-wrap:wrap; margin-bottom:12px; }
+        .das-summary .kpi .v { font-family:var(--mono); font-size:1.3rem; color:var(--sol-teal); }
+        .das-summary .kpi .k { font-size:0.6rem; color:#555; text-transform:uppercase; letter-spacing:1px; }
+        .das-table-wrap { overflow-x:auto; }
+        .das-table { width:100%; border-collapse:collapse; font-size:0.72rem; }
+        .das-table th {
+            text-align:left; padding:8px 10px; color:#555; font-family:var(--mono);
+            font-size:0.6rem; text-transform:uppercase; letter-spacing:1px;
+            border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+        .das-table td { padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.03); color:#aaa; }
+        .das-table td.sym { color:#fff; font-family:var(--mono); }
+        .das-table td.num { font-family:var(--mono); text-align:right; }
+        .das-table th.num { text-align:right; }
+        .das-table td.usd { color:var(--sol-teal); }
+        .das-status { font-family:var(--mono); font-size:0.62rem; color:#555; margin-top:10px; }
+        .das-status.err { color:#ff6b6b; }
+
         /* ── dApp systems grid ─────────────────────────────────── */
         .systems { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px; margin:20px 0; }
         .system-card {
