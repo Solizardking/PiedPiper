@@ -338,6 +338,7 @@
 
         <!-- Section Nav -->
         <nav class="section-nav" aria-label="Page sections">
+            <a href="#wallet">Wallet</a>
             <a href="#dapps">dApps</a>
             <a href="#modules">Modules</a>
             <a href="#native">Native</a>
@@ -376,6 +377,34 @@
             <span class="node final">clawd-trading-wallet</span>
         </div>
         <div class="lineage-caption">the first LLM to bear an <em>on-chain Solana wallet</em> — sovereign agent lineage</div>
+
+        <!-- Helius DAS Live Wallet Stats -->
+        <div class="das-section" id="wallet">
+            <h2>📡 <span>Live Wallet Stats</span> — Helius DAS</h2>
+            <div class="desc">
+                Realtime fungible-token holdings, prices, and portfolio value via the Helius Digital Asset Standard API.
+                Connect your wallet above or paste any address. The API key is stored only in your browser (localStorage).
+            </div>
+            <div class="das-controls">
+                <input type="text" id="dasApiKey" placeholder="Helius API key (stored locally)" autocomplete="off">
+                <input type="text" id="dasOwner" placeholder="Owner address (auto-fills from connected wallet)" autocomplete="off">
+                <button type="button" onclick="dasRefresh()">⟳ Refresh</button>
+                <button type="button" id="dasAutoBtn" onclick="dasToggleAuto()">▶ Auto 20s</button>
+            </div>
+            <div class="das-summary">
+                <div class="kpi"><div class="v" id="dasTotalUsd">—</div><div class="k">Portfolio USD</div></div>
+                <div class="kpi"><div class="v" id="dasSolBal">—</div><div class="k">SOL Balance</div></div>
+                <div class="kpi"><div class="v" id="dasTokenCount">—</div><div class="k">Tokens</div></div>
+                <div class="kpi"><div class="v" id="dasNftCount">—</div><div class="k">NFTs / cNFTs</div></div>
+            </div>
+            <div class="das-table-wrap">
+                <table class="das-table" id="dasTable" style="display:none;">
+                    <thead><tr><th>Token</th><th class="num">Balance</th><th class="num">Price</th><th class="num">Value</th><th>Mint</th></tr></thead>
+                    <tbody id="dasTbody"></tbody>
+                </table>
+            </div>
+            <div class="das-status" id="dasStatus">Enter a Helius API key and address, then press Refresh.</div>
+        </div>
 
         <!-- Main dApp Surfaces -->
         <h2 class="section-title" id="dapps">◈ <span class="accent">Deployed dApp Surfaces</span> ◈</h2>
