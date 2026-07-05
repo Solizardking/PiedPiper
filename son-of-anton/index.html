@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Son of Anton - Encryption Suite</title>
+    <link rel="stylesheet" href="../shared/solana-integration.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
 
@@ -252,6 +253,7 @@
 
     <div class="container">
         <a href="../index.html" class="back">← PiedPiper Hub</a>
+        <div data-solana-mount></div>
 
         <header>
             <div class="logo">SON OF ANTON</div>
@@ -259,13 +261,17 @@
         </header>
 
         <div class="tab-bar">
-            <button class="tab-btn active" data-tab="aes">AES-128</button>
+            <button class="tab-btn" data-tab="aes">AES-128</button>
             <button class="tab-btn" data-tab="des">DES</button>
             <button class="tab-btn" data-tab="rsa">RSA</button>
             <button class="tab-btn" data-tab="ca-enc">CA-Password</button>
             <button class="tab-btn" data-tab="sha">SHA-512</button>
             <button class="tab-btn" data-tab="pp-ssh">PP_SSH</button>
-            <button class="tab-btn" data-tab="overview">Overview</button>
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+        </div>
+        <div class="pp-solana-proof-row">
+            <button class="pp-solana-proof-button" type="button" onclick="recordEncryptionProof()">Record Encryption Proof</button>
+            <span class="pp-solana-proof-status" id="encryptionProofStatus"></span>
         </div>
 
         <!-- Overview Panel -->
@@ -389,7 +395,54 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/@solana/web3.js@1/lib/index.iife.min.js"></script>
+    <script src="../shared/solana-integration.js" data-theme="red"></script>
     <script>
+        function getActiveEncryptionProofPayload() {
+            const activePanel = document.querySelector('.panel.active') || document.getElementById('panel-overview');
+            const algorithm = activePanel.id.replace('panel-', '');
+            const controls = Array.from(activePanel.querySelectorAll('textarea, input')).map((input) => {
+                const sensitive = input.type === 'password' || /key|password/i.test(input.id || '');
+                return {
+                    id: input.id || input.type,
+                    type: input.type || input.tagName.toLowerCase(),
+                    sensitive: sensitive,
+                    valueLength: input.value.length,
+                };
+            });
+            const outputs = Array.from(activePanel.querySelectorAll('.output-box')).map((output) => ({
+                id: output.id,
+                text: output.innerText.trim(),
+            }));
+
+            return {
+                page: 'son-of-anton',
+                algorithm: algorithm,
+                controls: controls,
+                outputs: outputs,
+                sourcePaths: [
+                    'Encryption/AES-128',
+                    'Encryption/DES Encryption',
+                    'Encryption/RSA Encryption',
+                    'Encryption/CA_Password_Protect',
+                    'PP_HASH',
+                    'PP_SSH',
+                ],
+            };
+        }
+
+        function recordEncryptionProof() {
+            return window.PiedPiperSolana.recordProof({
+                module: 'son-of-anton',
+                kind: 'encryption-proof',
+                label: (document.querySelector('.panel.active') || document.getElementById('panel-overview')).id.replace('panel-', ''),
+                statusElement: '#encryptionProofStatus',
+                payload: getActiveEncryptionProofPayload,
+            }).catch((err) => {
+                document.getElementById('encryptionProofStatus').textContent = err.message || String(err);
+            });
+        }
+
         // ============================================================
         // AES-128 IMPLEMENTATION
         // ============================================================

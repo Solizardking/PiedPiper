@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Richard Hendricks - Middle-Out Compression Platform</title>
+    <link rel="stylesheet" href="../shared/solana-integration.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
 
@@ -284,6 +285,7 @@
 
     <div class="container">
         <a href="../index.html" class="back">← PiedPiper Hub</a>
+        <div data-solana-mount></div>
 
         <header>
             <div class="logo">☰ RICHARD HENDRICKS</div>
@@ -291,13 +293,17 @@
         </header>
 
         <div class="tab-bar">
-            <button class="tab-btn active" data-tab="huffman">Huffman</button>
+            <button class="tab-btn" data-tab="huffman">Huffman</button>
             <button class="tab-btn" data-tab="arithmetic">Arithmetic</button>
             <button class="tab-btn" data-tab="bwt-rle">BWT + RLE</button>
             <button class="tab-btn" data-tab="jpeg">JPEG</button>
             <button class="tab-btn" data-tab="kmeans">K-means</button>
             <button class="tab-btn" data-tab="pbic">PBIC</button>
-            <button class="tab-btn" data-tab="overview">Overview</button>
+            <button class="tab-btn active" data-tab="overview">Overview</button>
+        </div>
+        <div class="pp-solana-proof-row">
+            <button class="pp-solana-proof-button" type="button" onclick="recordCompressionProof()">Record Compression Proof</button>
+            <span class="pp-solana-proof-status" id="compressionProofStatus"></span>
         </div>
 
         <!-- Overview Panel -->
@@ -432,7 +438,50 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/@solana/web3.js@1/lib/index.iife.min.js"></script>
+    <script src="../shared/solana-integration.js" data-theme="blue"></script>
     <script>
+        function getActiveCompressionProofPayload() {
+            const activePanel = document.querySelector('.panel.active') || document.getElementById('panel-overview');
+            const algorithm = activePanel.id.replace('panel-', '');
+            const controls = Array.from(activePanel.querySelectorAll('textarea, input')).map((input) => ({
+                id: input.id || input.type,
+                type: input.type || input.tagName.toLowerCase(),
+                value: input.value,
+            }));
+            const outputs = Array.from(activePanel.querySelectorAll('.output-box')).map((output) => ({
+                id: output.id,
+                text: output.innerText.trim(),
+            }));
+
+            return {
+                page: 'richard-hendricks',
+                algorithm: algorithm,
+                controls: controls,
+                outputs: outputs,
+                sourcePaths: [
+                    'Compression/Huffman',
+                    'Compression/Arithmetic',
+                    'Compression/Add-ons',
+                    'Image Compression/JPEG Compression',
+                    'Image Compression/K-means',
+                    'Image Compression/PBIC',
+                ],
+            };
+        }
+
+        function recordCompressionProof() {
+            return window.PiedPiperSolana.recordProof({
+                module: 'richard-hendricks',
+                kind: 'compression-proof',
+                label: (document.querySelector('.panel.active') || document.getElementById('panel-overview')).id.replace('panel-', ''),
+                statusElement: '#compressionProofStatus',
+                payload: getActiveCompressionProofPayload,
+            }).catch((err) => {
+                document.getElementById('compressionProofStatus').textContent = err.message || String(err);
+            });
+        }
+
         // ============================================================
         // HUFFMAN STATIC CODING
         // ============================================================

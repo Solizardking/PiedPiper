@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Silicon Valley - Multi-Agent Collision Avoidance</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.0/p5.min.js"></script>
+    <link rel="stylesheet" href="../shared/solana-integration.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap');
 
@@ -194,6 +195,7 @@
         <h1>Silicon Valley</h1>
         <div class="subtitle">Multi-Agent Collision Avoidance</div>
         <p>Intelligent agents navigate complex obstacle environments using cellular automaton pathfinding with North-Western priority scheduling and deadlock avoidance.</p>
+        <div data-solana-mount></div>
 
         <div class="control-group">
             <label>Number of Agents</label>
@@ -222,6 +224,10 @@
         <button class="btn" id="randomizeBtn">🌀 Randomize Obstacles</button>
         <button class="btn" id="resetBtn">🔄 Reset Agents</button>
         <button class="btn danger" id="clearBtn">✕ Clear All</button>
+        <div class="pp-solana-proof-row" style="display:block;margin-top:12px;">
+            <button class="pp-solana-proof-button" style="width:100%;" type="button" onclick="recordSimulationProof()">Record Simulation Proof</button>
+            <div class="pp-solana-proof-status" id="simulationProofStatus" style="margin-top:8px;"></div>
+        </div>
 
         <div class="info-grid">
             <div class="info-item">
@@ -245,6 +251,8 @@
 
     <div id="canvas-container"></div>
 
+    <script src="https://unpkg.com/@solana/web3.js@1/lib/index.iife.min.js"></script>
+    <script src="../shared/solana-integration.js" data-theme="green"></script>
     <script>
         // ============================================================
         // Multi-Agent Collision Avoidance Simulator
@@ -273,6 +281,38 @@
             PATH_HIGHLIGHT: [0, 255, 136, 30],
             DEADLOCK: [255, 50, 50],
         };
+
+        function getSiliconValleySnapshot() {
+            return {
+                page: 'silicon-valley',
+                gridSize: GRID_SIZE,
+                tickCount: tickCount,
+                arrivedCount: arrivedCount,
+                deadlockCount: deadlockCount,
+                obstacleCount: grid.flat().filter((cell) => cell === 2).length,
+                agents: agents.map((agent) => ({
+                    id: agent.id,
+                    position: { x: agent.pos.x, y: agent.pos.y },
+                    destination: { x: agent.destination.x, y: agent.destination.y },
+                    arrived: agent.arrived,
+                    deadlocked: agent.deadlocked,
+                    pathLength: agent.path.length,
+                })),
+                grid: grid.map((row) => row.join('')).join('|'),
+            };
+        }
+
+        function recordSimulationProof() {
+            return window.PiedPiperSolana.recordProof({
+                module: 'silicon-valley',
+                kind: 'multi-agent-simulation-proof',
+                label: 'collision-avoidance-tick-' + tickCount,
+                statusElement: '#simulationProofStatus',
+                payload: getSiliconValleySnapshot,
+            }).catch((err) => {
+                document.getElementById('simulationProofStatus').textContent = err.message || String(err);
+            });
+        }
 
         class Position {
             constructor(x, y) {
