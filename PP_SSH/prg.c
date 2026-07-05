@@ -26,7 +26,7 @@ int c_x = 0, c_y = 0;
 
 void initMain(unsigned char *pswd, int len)
 {
-    row_size = max(len, strlen(pswd));
+    row_size = max(len, (int)strlen((const char *)pswd));
     column_size = column_size / row_size;
     hasharray = (unsigned char **)malloc((column_size + 1) * sizeof(unsigned char *));
     for (int x = 0; x < column_size + 1; x++)
@@ -72,7 +72,7 @@ unsigned char conversion(int x, int y)
 */
 unsigned char **removeBias(unsigned char *ar)
 {
-    int ar_size = strlen(ar);
+    int ar_size = strlen((const char *)ar);
     unsigned char **arr = hasharray;
     for (int x = 0; x < row_size; x++)
     {

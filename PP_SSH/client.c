@@ -17,8 +17,9 @@ int readAck(socket_conn *con)
 
     // do
     // {
-        char *ack = (char *)calloc(100, 1);
-        read(con->sockfd, ack, 100);
+    char *ack = (char *)calloc(100, 1);
+    read(con->sockfd, ack, 100);
+    free(ack);
     //     rl = strlen(ack);
     //     if (strlen(ack) != 0)
     //     {
@@ -39,11 +40,9 @@ int sendAck(socket_conn *con)
 
 socket_conn *make_connection(char *ip, char *port)
 {
-    initMain("PASSWORD1234", 12);
-    int sock = 0, valread;
+    initMain((unsigned char *)"PASSWORD1234", 12);
+    int sock = 0;
     struct sockaddr_in serv_addr;
-    char *hello = "Hello from client";
-    char buffer[1024] = {0};
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         fprintf(stderr, "\n Socket creation error \n");
@@ -163,7 +162,7 @@ flag:
 
 char *trimString(char *str)
 {
-    char *ret = (char *)calloc(1024, 0);
+    char *ret = (char *)calloc(1024, 1);
     int ind = 0, flag = 0;
     int lastIndex = strlen(str) - 1;
     while (lastIndex >= 0)
@@ -185,6 +184,7 @@ char *trimString(char *str)
             ret[ind++] = str[x];
         }
     }
+    ret[ind] = '\0';
     return ret;
 }
 

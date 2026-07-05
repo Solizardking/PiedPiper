@@ -1,32 +1,24 @@
-client : \
-	server \
-	util.o \
-	prg.o \
-	client.h \
-	log.h \
-	client.c 
-	
-	gcc -o client $^
+CC ?= cc
+CFLAGS ?= -Wall -Wextra -g
 
-server : \
-	util.o \
-	prg.o \
-	server.h \
-	log.h \
-	server.c 
+.PHONY: all clean
 
-	gcc -o server $^
+all: client server
 
-util.o : util.h util.c
-	gcc -c -g util.c
+client: util.o prg.o client.h log.h client.c makefile
+	$(CC) $(CFLAGS) -o client util.o prg.o client.c
 
-prg.o :	prg.h prg.c util.c util.h
-	gcc -c -g prg.c 
+server: util.o prg.o server.h log.h server.c makefile
+	$(CC) $(CFLAGS) -o server util.o prg.o server.c
 
-# clean : 
-# 	rm -rf *.o client server
+util.o: util.h util.c makefile
+	$(CC) $(CFLAGS) -c util.c
 
+prg.o: prg.h prg.c util.c util.h makefile
+	$(CC) $(CFLAGS) -c prg.c
 
+clean:
+	rm -f *.o client server tmp_*.txt
 
 
 

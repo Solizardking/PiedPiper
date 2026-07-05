@@ -82,29 +82,28 @@ ul cell_automaton(ul a, ul b, ul c)
     return rv;
 }
 
-ul *round(ul *ar, int x) // return x and y as 2-D array
+void compression_round(ul *ar, int x)
 {
 
     ul mixer_2 = cell_automaton(conditional(ar[4], ar[5], ar[6]), rot_function2(ar[4]), cell_automaton(ar[7], W[x], K[x]));
-    ul *ar2 = (ul *)malloc(2 * sizeof(ul));
-    ar2[0] = cell_automaton(majority(ar[0], ar[1], ar[2]), rot_function1(ar[0]), mixer_2);
-    ar2[1] = overflow_addition(mixer_2, ar[3]);
-    // printf(" Round %d   X : %lx  Y : %lx\n", x, ar2[0], ar2[1]);
+    ul next_a = cell_automaton(majority(ar[0], ar[1], ar[2]), rot_function1(ar[0]), mixer_2);
+    ul next_e = overflow_addition(mixer_2, ar[3]);
+    // printf(" Round %d   X : %lx  Y : %lx\n", x, next_a, next_e);
     ar[7] = ar[6];
     ar[6] = ar[5];
     ar[5] = ar[4];
-    ar[4] = ar2[1];
+    ar[4] = next_e;
     ar[2] = ar[3];
     ar[1] = ar[2];
     ar[0] = ar[1];
-    ar[0] = ar2[0];
+    ar[0] = next_a;
 }
 
 void hash(ul *hashArr)
 {
     for (int x = 0; x < 80; x++)
     {
-        round(hashArr, x);
+        compression_round(hashArr, x);
     }
     for (int x = 0; x < 8; x++)
     {
@@ -133,22 +132,30 @@ void displayHash(ul *ar, int l)
 
 int main(int argc, char *argv[]) // for now assume size of string is less than 1024-64 bytes
 {
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage: %s [string]\n", argv[0]);
+        return 1;
+    }
+
     // ul a = atol(argv[1]);
     // printf("\n[D]%lx Rotate right op\n", rotate(a, 3));
     // exit(0);
     ul *ar = (ul *)malloc(sizeof(ul) * 8);
-    int app_l = 1024;
-    char argument[1024];
-    for (int x = 0; x < strlen(argv[1]); x++)
+    int app_l = 128;
+    char argument[128];
+    size_t input_len = strlen(argv[1]);
+
+    if (input_len > app_l - sizeof(ul))
     {
-        argument[x] = argv[1][x];
-    }
-    for (int x = strlen(argv[1]); x < app_l; x++)
-    {
-        argument[x] = 0x00;
+        fprintf(stderr, "Input is too long for this single-block CA-SHA demo (max %lu bytes)\n", (unsigned long)(app_l - sizeof(ul)));
+        free(ar);
+        return 1;
     }
 
-    int max_x = 0;
+    memset(argument, 0, sizeof(argument));
+    memcpy(argument, argv[1], input_len);
+
     for (int x = 0; x < app_l; x += 8)
     {
         W[x / 8] = 0x00;
@@ -157,7 +164,6 @@ int main(int argc, char *argv[]) // for now assume size of string is less than 1
             W[x / 8] <<= 8;
             W[x / 8] |= argument[z];
         }
-        max_x = x / 8;
     }
     // for (int x = max_x + 1; x <= 15; x++)
     // {
@@ -171,4 +177,6 @@ int main(int argc, char *argv[]) // for now assume size of string is less than 1
     duplicate_W();
     hash(ar);
     displayHash(ar, 8);
+    free(ar);
+    return 0;
 }

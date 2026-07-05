@@ -13,6 +13,10 @@
 #define PORT 8000
 #define BUFFER_LENGTH (100 * 1024 * 1024L)
 
+#ifndef O_LARGEFILE
+#define O_LARGEFILE 0
+#endif
+
 void encryptFunction(char *command)
 {
     for (int x = 0; x < strlen(command); x++)
@@ -79,6 +83,7 @@ void recAck(int fd)
     // {
     char *ack = (char *)calloc(100, 1);
     read(fd, ack, 100);
+    free(ack);
     //     rl = strlen(ack);
     //     if (strlen(ack) != 0)
     //     {
@@ -98,7 +103,7 @@ void sendAck(int fd)
 
 char *trimString(char *str)
 {
-    char *ret = (char *)malloc(1024);
+    char *ret = (char *)calloc(1024, 1);
     int ind = 0, flag = 0;
     int lastIndex = strlen(str) - 1;
     while (lastIndex >= 0)
@@ -120,6 +125,7 @@ char *trimString(char *str)
             ret[ind++] = str[x];
         }
     }
+    ret[ind] = '\0';
     return ret;
 }
 
@@ -150,13 +156,14 @@ int understand(char *msg, int new_socket, int c_name)
     strcat(msg, fn);
     // printf("Command is %s", msg);
     system(msg);
-    int fd1 = open(&(fn[3]), O_RDWR | __O_LARGEFILE | O_CREAT, 0666);
+    int fd1 = open(&(fn[3]), O_RDONLY | O_LARGEFILE | O_CREAT, 0666);
     if (fd1 < 0)
     {
         printf("Invalid file error\n");
         char ss[3] = "INV";
         encryptFunction(ss);
         send(new_socket, ss, 3, 0);
+        free(str);
         return 0;
     }
     int rl = 1;
@@ -171,6 +178,8 @@ int understand(char *msg, int new_socket, int c_name)
         send(new_socket, ss, 3, 0);
         system(rmc);
         recAck(new_socket); // receives acknowledgement from client for command completed
+        close(fd1);
+        free(str);
         return 0;
     }
     encryptFunction(str);
@@ -190,7 +199,7 @@ int main(int argc, char const *argv[])
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
     int opt = 1;
-    int addrlen = sizeof(address);
+    socklen_t addrlen = sizeof(address);
     // char *hello = "Hello from server";
 
     // Creating socket file descriptor
@@ -200,13 +209,19 @@ int main(int argc, char const *argv[])
         exit(EXIT_FAILURE);
     }
 
-    // This is to lose the pesky "Address already in use" error message
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
-                   &opt, sizeof(opt))) // SOL_SOCKET is the socket layer itself
+    // This is to lose the pesky "Address already in use" error message.
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) // SOL_SOCKET is the socket layer itself
     {
-        perror("setsockopt");
+        perror("setsockopt SO_REUSEADDR");
         exit(EXIT_FAILURE);
     }
+#ifdef SO_REUSEPORT
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEPORT, &opt, sizeof(opt)))
+    {
+        perror("setsockopt SO_REUSEPORT");
+        exit(EXIT_FAILURE);
+    }
+#endif
     address.sin_family = AF_INET;         // Address family. For IPv6, it's AF_INET6. 29 others exist like AF_UNIX etc.
     address.sin_addr.s_addr = INADDR_ANY; // Accept connections from any IP address - listens from all interfaces.
     address.sin_port = htons(PORT);       // Server port to open. Htons converts to Big Endian - Left to Right. RTL is Little Endian
@@ -227,13 +242,18 @@ int main(int argc, char const *argv[])
         perror("listen");
         exit(EXIT_FAILURE);
     }
-    int pid, new;
+    int pid;
     static int counter = 0;
     for (;;)
     {
         // label to go to on fork
     a:
         new_socket = accept(server_fd, (struct sockaddr *)&address, &addrlen);
+        if (new_socket < 0)
+        {
+            perror("accept");
+            continue;
+        }
 
         if ((pid = fork()) == -1)
         {
@@ -254,12 +274,17 @@ int main(int argc, char const *argv[])
         {
             counter++;
             printf("Client %d has joined the server\n", counter);
-            initMain("PASSWORD1234", 12);
+            initMain((unsigned char *)"PASSWORD1234", 12);
             // code for all clients here
             while (1)
             {
-                char *buffer = (char *)calloc(1024, 0);
+                char *buffer = (char *)calloc(1024, 1);
                 valread = read(new_socket, buffer, 1024); // accepts the command
+                if (valread <= 0)
+                {
+                    free(buffer);
+                    break;
+                }
                 // showHex(buffer);
                 encryptFunction(buffer);
                 printf("Command is %s\n", buffer);
@@ -269,6 +294,7 @@ int main(int argc, char const *argv[])
                 if (understand(buffer, new_socket, counter)) // interpret the command
                 {
                     sendAck(new_socket); // sends acknowledgement for command
+                    free(buffer);
                     break;               // in case of exit
                 }
                 free(buffer);
