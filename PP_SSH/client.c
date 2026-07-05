@@ -73,7 +73,8 @@ socket_conn *make_connection(char *ip, char *port)
 
 void encryptFunction(char *command)
 {
-    for (int x = 0; x < strlen(command); x++)
+    size_t len = strlen(command);
+    for (size_t x = 0; x < len; x++)
     {
         command[x] = (command[x] ^ ((unsigned char)getNum()));
         if (command[x] == '\0' || command[x] == '\255')
@@ -85,8 +86,9 @@ void encryptFunction(char *command)
 
 void showHex(char *command)
 {
-    char hs[strlen(command) * 2];
-    for (int x = 0; x < strlen(command); x++)
+    size_t len = strlen(command);
+    char hs[len * 2 + 1];
+    for (size_t x = 0; x < len; x++)
     {
         hs[2 * x] = command[x];
         hs[2 * x + 1] = command[x] >> 4;
@@ -108,6 +110,7 @@ void showHex(char *command)
             hs[2 * x + 1] = (hs[2 * x + 1] & 0xF0) + '0';
         }
     }
+    hs[len * 2] = '\0';
     // printf("\n");
     printf(" HEX String :: %s\n", hs);
 }
@@ -124,6 +127,12 @@ void send_command(char *command, socket_conn *con)
     char *op_command = (char *)calloc(MINLEN * 5, 1); // = (char *)calloc(MINLEN * 5, 1); // max size of output is minlen*5 (arbritrary)
     int rl = 0;
     rl = read(con->sockfd, op_command, MINLEN * 5); // client reads command response
+    if (rl <= 0)
+    {
+        free(op_command);
+        return;
+    }
+    op_command[rl] = '\0';
     // showHex(op_command);
     encryptFunction(op_command);
     if (op_command[0] == 'B' && op_command[1] == 'Y' && op_command[2]== 'E')
@@ -206,7 +215,7 @@ void assertCommand(int argc, char *argv[])
         exit(0);
     }
     int cd = 0;
-    for (int x = 0; x < strlen(argv[1]); x++)
+    for (size_t x = 0; x < strlen(argv[1]); x++)
     {
         if (argv[1][x] == '.')
             cd++;

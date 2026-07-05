@@ -19,7 +19,8 @@
 
 void encryptFunction(char *command)
 {
-    for (int x = 0; x < strlen(command); x++)
+    size_t len = strlen(command);
+    for (size_t x = 0; x < len; x++)
     {
         command[x] = (command[x] ^ ((unsigned char)getNum()));
         if (command[x] == '\0' || command[x] == '\255')
@@ -31,8 +32,9 @@ void encryptFunction(char *command)
 
 void showHex(char *command)
 {
-    char hs[strlen(command) * 2];
-    for (int x = 0; x < strlen(command); x++)
+    size_t len = strlen(command);
+    char hs[len * 2 + 1];
+    for (size_t x = 0; x < len; x++)
     {
         hs[2 * x] = command[x];
         hs[2 * x + 1] = command[x] >> 4;
@@ -54,6 +56,7 @@ void showHex(char *command)
             hs[2 * x + 1] = (hs[2 * x + 1] & 0xF0) + '0';
         }
     }
+    hs[len * 2] = '\0';
     // printf("\n");
     printf(" HEX String :: %s\n", hs);
 }
@@ -64,7 +67,7 @@ int strcompare(char *s1, char *s2)
     {
         return 0;
     }
-    for (int x = 0; x < strlen(s1); x++)
+    for (size_t x = 0; x < strlen(s1); x++)
     {
         if (s1[x] != s2[x])
         {
@@ -196,6 +199,9 @@ int understand(char *msg, int new_socket, int c_name)
 
 int main(int argc, char const *argv[])
 {
+    (void)argc;
+    (void)argv;
+
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
     int opt = 1;
