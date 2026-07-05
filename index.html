@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PiedPiper — Solana-native compression, encryption, and cellular automaton platform with an NVIDIA model ecosystem.">
     <title>PiedPiper — Solana Native | Conway Cloud | NVIDIA</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10,10 +11,21 @@
     <link rel="stylesheet" href="shared/solana-integration.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --sol-purple: #9945FF; --sol-teal: #14F195; --bg: #0a0a0f; }
+        :root {
+            --sol-purple: #9945FF;
+            --sol-teal: #14F195;
+            --nvidia: #76B900;
+            --bg: #0a0a0f;
+            --panel: rgba(15,15,30,0.8);
+            --panel-deep: linear-gradient(145deg,rgba(15,15,25,0.85),rgba(10,10,20,0.95));
+            --line: rgba(153,69,255,0.08);
+            --mono: 'Space Mono', monospace;
+        }
+        html { scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: #e0e0e0; min-height: 100vh; overflow-x: hidden; }
+
         .bg-grid {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; inset: 0;
             background:
                 radial-gradient(circle at 20% 50%, rgba(153,69,255,0.06) 0%, transparent 50%),
                 radial-gradient(circle at 80% 50%, rgba(20,241,149,0.06) 0%, transparent 50%),
@@ -36,41 +48,56 @@
         }
         .container { position:relative; z-index:1; max-width:1400px; margin:0 auto; padding:30px 20px; }
 
-        /* Solana bar */
+        /* ── Solana connection bar ─────────────────────────────── */
         .solana-bar {
             display:flex; align-items:center; justify-content:space-between;
-            padding:14px 24px; background:rgba(15,15,30,0.8);
+            padding:14px 24px; background:var(--panel);
             border:1px solid rgba(153,69,255,0.15); border-radius:16px;
-            margin-bottom:30px; backdrop-filter:blur(10px); flex-wrap:wrap; gap:10px;
+            margin-bottom:14px; backdrop-filter:blur(10px); flex-wrap:wrap; gap:10px;
         }
         .chain-info { display:flex; align-items:center; gap:12px; }
         .chain-dot {
-            width:10px; height:10px; border-radius:50%; background:#14F195;
+            width:10px; height:10px; border-radius:50%; background:var(--sol-teal);
             box-shadow:0 0 20px rgba(20,241,149,0.4); animation:pulse-dot 2s infinite;
         }
         @keyframes pulse-dot { 0%,100%{box-shadow:0 0 20px rgba(20,241,149,0.4)} 50%{box-shadow:0 0 40px rgba(20,241,149,0.8)} }
-        .chain-name { font-family:'Space Mono',monospace; font-size:0.8rem; color:#888; }
-        .chain-name strong { color:#14F195; }
-
+        .chain-name { font-family:var(--mono); font-size:0.8rem; color:#888; }
+        .chain-name strong { color:var(--sol-teal); }
         .wallet-btn {
             display:flex; align-items:center; gap:8px; padding:8px 18px;
             background:linear-gradient(135deg,rgba(153,69,255,0.15),rgba(20,241,149,0.1));
             border:1px solid rgba(153,69,255,0.25); border-radius:10px;
-            color:#fff; font-family:'Space Mono',monospace; font-size:0.75rem;
+            color:#fff; font-family:var(--mono); font-size:0.75rem;
             cursor:pointer; transition:all 0.3s;
         }
         .wallet-btn:hover { background:linear-gradient(135deg,rgba(153,69,255,0.25),rgba(20,241,149,0.15)); border-color:rgba(153,69,255,0.5); }
-        .wallet-btn.connected { border-color:#14F195; }
+        .wallet-btn.connected { border-color:var(--sol-teal); }
 
-        header { text-align:center; padding:30px 0 20px; }
+        /* ── Section nav ───────────────────────────────────────── */
+        .section-nav {
+            display:flex; gap:6px; justify-content:center; flex-wrap:wrap;
+            padding:10px 16px; margin-bottom:16px;
+            background:rgba(15,15,30,0.5); border:1px solid rgba(255,255,255,0.03);
+            border-radius:14px;
+        }
+        .section-nav a {
+            padding:5px 14px; border-radius:10px; text-decoration:none;
+            font-family:var(--mono); font-size:0.65rem; letter-spacing:1px;
+            color:#777; border:1px solid transparent; transition:all 0.25s;
+            text-transform:uppercase;
+        }
+        .section-nav a:hover { color:var(--sol-teal); border-color:rgba(20,241,149,0.2); background:rgba(20,241,149,0.04); }
+
+        /* ── Hero ──────────────────────────────────────────────── */
+        header { text-align:center; padding:26px 0 20px; }
         .solana-badge {
             display:inline-flex; align-items:center; gap:6px; padding:4px 14px;
             background:rgba(153,69,255,0.1); border:1px solid rgba(153,69,255,0.2);
-            border-radius:20px; font-family:'Space Mono',monospace; font-size:0.65rem;
-            color:#9945FF; letter-spacing:1px; margin-bottom:16px;
+            border-radius:20px; font-family:var(--mono); font-size:0.65rem;
+            color:var(--sol-purple); letter-spacing:1px; margin-bottom:16px;
         }
         .logo {
-            font-family:'Space Mono',monospace; font-size:4rem; font-weight:700;
+            font-family:var(--mono); font-size:4rem; font-weight:700;
             background:linear-gradient(135deg,#9945FF,#14F195,#9945FF);
             background-size:200% 200%;
             -webkit-background-clip:text; -webkit-text-fill-color:transparent;
@@ -78,23 +105,45 @@
         }
         @keyframes gradientShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
         .tagline { font-size:0.8rem; color:#666; letter-spacing:3px; text-transform:uppercase; }
-        .tagline .sol { color:#9945FF; } .tagline .nat { color:#14F195; }
+        .tagline .sol { color:var(--sol-purple); } .tagline .nat { color:var(--sol-teal); }
+        .hero-sub { max-width:680px; margin:14px auto 0; color:#777; font-size:0.85rem; line-height:1.7; }
+        .hero-sub strong { color:#bbb; font-weight:600; }
 
         .chain-ticker {
             display:flex; gap:30px; justify-content:center;
-            padding:12px 20px; margin:15px auto; max-width:600px;
+            padding:12px 20px; margin:18px auto 10px; max-width:600px;
             background:rgba(15,15,30,0.5); border:1px solid rgba(255,255,255,0.03);
             border-radius:12px; flex-wrap:wrap;
         }
         .ticker-item { text-align:center; }
-        .ticker-item .val { font-family:'Space Mono',monospace; font-size:1rem; color:#14F195; }
+        .ticker-item .val { font-family:var(--mono); font-size:1rem; color:var(--sol-teal); }
         .ticker-item .lbl { font-size:0.6rem; color:#555; text-transform:uppercase; letter-spacing:1px; }
 
-        /* Systems grid */
-        .systems { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px; margin:25px 0; }
+        /* ── Lineage strip ─────────────────────────────────────── */
+        .lineage {
+            display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+            margin:22px auto; padding:14px 20px; max-width:860px;
+            background:rgba(15,15,30,0.5); border:1px solid var(--line); border-radius:14px;
+            font-family:var(--mono); font-size:0.7rem;
+        }
+        .lineage .node { padding:5px 14px; border-radius:10px; border:1px solid rgba(153,69,255,0.18); color:#ccc; background:rgba(153,69,255,0.05); white-space:nowrap; }
+        .lineage .node.final { border-color:rgba(20,241,149,0.3); color:var(--sol-teal); background:rgba(20,241,149,0.05); }
+        .lineage .flow { color:#555; }
+        .lineage-caption { text-align:center; font-size:0.65rem; color:#555; margin:-12px 0 20px; font-family:var(--mono); }
+        .lineage-caption em { color:var(--sol-teal); font-style:normal; }
+
+        /* ── Section headings ──────────────────────────────────── */
+        .section-title {
+            color:#555; font-size:0.8rem; text-transform:uppercase; letter-spacing:2px;
+            margin:40px 0 14px; text-align:center; font-weight:600;
+        }
+        .section-title .accent { background:linear-gradient(135deg,#9945FF,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+
+        /* ── dApp systems grid ─────────────────────────────────── */
+        .systems { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px; margin:20px 0; }
         .system-card {
-            background:linear-gradient(145deg,rgba(15,15,25,0.85),rgba(10,10,20,0.95));
-            border:1px solid rgba(153,69,255,0.08); border-radius:18px; padding:28px;
+            background:var(--panel-deep);
+            border:1px solid var(--line); border-radius:18px; padding:28px;
             transition:all 0.4s cubic-bezier(.175,.885,.32,1.275);
             cursor:pointer; position:relative; overflow:hidden; text-decoration:none; display:block;
         }
@@ -103,41 +152,80 @@
         .system-card:hover { transform:translateY(-5px); border-color:rgba(153,69,255,0.18); box-shadow:0 20px 60px rgba(153,69,255,0.06); }
         .card-icon { font-size:2.2rem; margin-bottom:12px; }
         .system-card h2 { font-size:1.4rem; font-weight:700; background:linear-gradient(135deg,#fff,#aaa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .system-card .subtitle { font-family:'Space Mono',monospace; font-size:0.7rem; background:linear-gradient(135deg,#9945FF,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:4px 0 10px; }
+        .system-card .subtitle { font-family:var(--mono); font-size:0.7rem; background:linear-gradient(135deg,#9945FF,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:4px 0 10px; }
         .system-card p { color:#777; line-height:1.5; font-size:0.8rem; }
         .system-card .tags { display:flex; flex-wrap:wrap; gap:5px; margin-top:12px; }
-        .system-card .tags span { padding:3px 10px; background:rgba(153,69,255,0.06); border:1px solid rgba(153,69,255,0.1); border-radius:12px; font-size:0.6rem; color:#9945FF; font-family:'Space Mono',monospace; }
-        .system-card .tags .st { background:rgba(20,241,149,0.06); border-color:rgba(20,241,149,0.12); color:#14F195; }
+        .system-card .tags span { padding:3px 10px; background:rgba(153,69,255,0.06); border:1px solid rgba(153,69,255,0.1); border-radius:12px; font-size:0.6rem; color:var(--sol-purple); font-family:var(--mono); }
+        .system-card .tags .st { background:rgba(20,241,149,0.06); border-color:rgba(20,241,149,0.12); color:var(--sol-teal); }
 
-        /* NVIDIA Section */
+        /* ── Module catalog (compression / encryption source) ──── */
+        .catalog { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin:20px 0; }
+        .catalog-col {
+            background:var(--panel-deep); border:1px solid var(--line);
+            border-radius:16px; padding:22px;
+        }
+        .catalog-col h3 { font-size:0.95rem; color:#ddd; margin-bottom:4px; }
+        .catalog-col h3 .em { background:linear-gradient(135deg,#9945FF,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .catalog-col .path { font-family:var(--mono); font-size:0.6rem; color:#555; margin-bottom:12px; display:block; }
+        .catalog-col ul { list-style:none; }
+        .catalog-col li {
+            display:flex; justify-content:space-between; gap:10px; align-items:baseline;
+            padding:7px 2px; border-bottom:1px solid rgba(255,255,255,0.03);
+            font-size:0.75rem; color:#999;
+        }
+        .catalog-col li:last-child { border-bottom:none; }
+        .catalog-col li .mod { font-family:var(--mono); color:#ccc; font-size:0.72rem; }
+        .catalog-col li .note { color:#555; font-size:0.65rem; text-align:right; }
+
+        /* ── Native toolchain ──────────────────────────────────── */
+        .native-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; margin:20px 0; }
+        .native-card {
+            background:var(--panel-deep); border:1px solid var(--line);
+            border-radius:16px; padding:22px; transition:border-color 0.3s;
+        }
+        .native-card:hover { border-color:rgba(20,241,149,0.15); }
+        .native-card .icon { font-size:1.6rem; }
+        .native-card h3 { font-size:1rem; color:#fff; margin:8px 0 2px; }
+        .native-card .sub { font-family:var(--mono); font-size:0.62rem; color:var(--sol-teal); margin-bottom:8px; }
+        .native-card p { font-size:0.75rem; color:#777; line-height:1.55; }
+        .native-card code.build {
+            display:block; margin-top:12px; padding:8px 12px;
+            background:rgba(0,0,0,0.4); border:1px solid rgba(20,241,149,0.08);
+            border-radius:8px; font-family:var(--mono); font-size:0.65rem; color:var(--sol-teal);
+            overflow-x:auto; white-space:nowrap;
+        }
+        .native-card a.doc { font-family:var(--mono); font-size:0.62rem; color:var(--sol-purple); text-decoration:none; }
+        .native-card a.doc:hover { color:var(--sol-teal); }
+
+        /* ── NVIDIA section ────────────────────────────────────── */
         .nvidia-section {
-            margin:30px 0; padding:28px;
+            margin:20px 0; padding:28px;
             background:linear-gradient(145deg,rgba(15,15,30,0.8),rgba(10,10,20,0.9));
             border:1px solid rgba(118,185,0,0.1); border-radius:18px;
         }
         .nvidia-section h2 { font-size:1.2rem; }
         .nvidia-section h2 span { background:linear-gradient(135deg,#76B900,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .nvidia-section .desc { color:#666; font-size:0.8rem; margin:8px 0 16px; }
-        .model-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:8px; }
+        .nvidia-section .desc { color:#666; font-size:0.8rem; margin:8px 0 16px; line-height:1.6; }
+        .nvidia-section .desc a { color:var(--sol-teal); }
+        .nvidia-section .desc code { color:var(--nvidia); font-family:var(--mono); font-size:0.72rem; }
+        .model-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:8px; }
         .model-card {
             padding:12px 14px; background:rgba(118,185,0,0.03); border:1px solid rgba(118,185,0,0.06);
-            border-radius:8px; font-family:'Space Mono',monospace; font-size:0.65rem; color:#888; transition:all 0.2s;
+            border-radius:8px; font-family:var(--mono); font-size:0.65rem; color:#888; transition:all 0.2s;
         }
         .model-card:hover { border-color:rgba(118,185,0,0.15); color:#ccc; }
-        .model-card .name { color:#76B900; font-size:0.7rem; }
+        .model-card .name { color:var(--nvidia); font-size:0.7rem; }
         .model-card .size { color:#555; }
-
-        /* Conway Chain */
-        .chain-section {
-            margin:30px 0; padding:28px;
-            background:linear-gradient(145deg,rgba(15,15,30,0.8),rgba(10,10,20,0.9));
-            border:1px solid rgba(153,69,255,0.08); border-radius:18px;
+        .oracle-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+        .oracle-row .chip {
+            padding:4px 12px; border-radius:12px; font-family:var(--mono); font-size:0.6rem;
+            color:#888; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05);
         }
-        .chain-section h2 { font-size:1.3rem; }
-        .chain-section h2 span { background:linear-gradient(135deg,#9945FF,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .chain-section .desc { color:#666; font-size:0.8rem; margin:8px 0 16px; }
+        .oracle-row .chip b { color:#aaa; font-weight:400; }
+        .oracle-label { font-size:0.62rem; color:#555; text-transform:uppercase; letter-spacing:1px; margin-top:16px; font-family:var(--mono); }
 
-        .sim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; margin:25px 0; }
+        /* ── Simulations ───────────────────────────────────────── */
+        .sim-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; margin:20px 0; }
         .sim-card {
             background:rgba(15,15,30,0.6); border:1px solid rgba(153,69,255,0.06);
             border-radius:14px; padding:20px; text-align:center;
@@ -147,21 +235,35 @@
         .sim-card .icon { font-size:1.8rem; }
         .sim-card h3 { font-size:1rem; color:#fff; margin:6px 0 4px; }
         .sim-card p { font-size:0.75rem; color:#555; }
-        .sim-card .arrow { display:inline-block; margin-top:8px; background:linear-gradient(135deg,#9945FF,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:'Space Mono',monospace; font-size:0.7rem; }
+        .sim-card .arrow { display:inline-block; margin-top:8px; background:linear-gradient(135deg,#9945FF,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-family:var(--mono); font-size:0.7rem; }
 
-        .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; padding:20px; background:rgba(15,15,30,0.4); border:1px solid rgba(255,255,255,0.02); border-radius:14px; margin:25px 0; }
+        /* ── Docs ──────────────────────────────────────────────── */
+        .docs-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px; margin:20px 0; }
+        .doc-card {
+            display:block; padding:14px 16px; text-decoration:none;
+            background:rgba(15,15,30,0.5); border:1px solid rgba(255,255,255,0.04);
+            border-radius:10px; transition:all 0.25s;
+        }
+        .doc-card:hover { border-color:rgba(153,69,255,0.2); background:rgba(153,69,255,0.04); }
+        .doc-card .name { font-family:var(--mono); font-size:0.72rem; color:var(--sol-teal); }
+        .doc-card .about { font-size:0.68rem; color:#666; margin-top:3px; line-height:1.4; }
+
+        /* ── Stats & footer ────────────────────────────────────── */
+        .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; padding:20px; background:rgba(15,15,30,0.4); border:1px solid rgba(255,255,255,0.02); border-radius:14px; margin:30px 0 20px; }
         .stat-item { text-align:center; }
-        .stat-item .num { font-family:'Space Mono',monospace; font-size:1.6rem; font-weight:700; background:linear-gradient(135deg,#9945FF,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .stat-item .num { font-family:var(--mono); font-size:1.6rem; font-weight:700; background:linear-gradient(135deg,#9945FF,#14F195); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
         .stat-item .lbl { font-size:0.6rem; color:#555; text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
 
-        footer { text-align:center; padding:30px 0; color:#333; font-size:0.7rem; font-family:'Space Mono',monospace; }
+        footer { text-align:center; padding:30px 0; color:#333; font-size:0.7rem; font-family:var(--mono); }
         footer a { color:#555; text-decoration:none; }
+        footer a:hover { color:var(--sol-teal); }
 
         @media (max-width:768px) {
             .logo { font-size:2.2rem; }
             .systems { grid-template-columns:1fr; }
             .stats-grid { grid-template-columns:repeat(2,1fr); }
             .model-grid { grid-template-columns:repeat(2,1fr); }
+            .lineage { font-size:0.6rem; gap:6px; }
         }
     </style>
 </head>
@@ -178,7 +280,7 @@
                     <strong>Solana</strong> <span data-pp-solana-cluster-label>Devnet</span> · Slot: <span id="slotDisplay">---</span>
                 </div>
             </div>
-            <div style="display:flex;gap:8px;align-items:center;">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                 <select class="pp-solana-select" data-pp-solana-cluster aria-label="Solana cluster">
                     <option value="devnet">Devnet</option>
                     <option value="mainnet-beta">Mainnet</option>
@@ -193,10 +295,26 @@
             </div>
         </div>
 
+        <!-- Section Nav -->
+        <nav class="section-nav" aria-label="Page sections">
+            <a href="#dapps">dApps</a>
+            <a href="#modules">Modules</a>
+            <a href="#native">Native</a>
+            <a href="#models">Models</a>
+            <a href="#simulations">Simulations</a>
+            <a href="#docs">Docs</a>
+        </nav>
+
         <header>
             <div class="solana-badge">✦ S O L A N A · N A T I V E ✦</div>
             <div class="logo">PIED PIPER</div>
             <div class="tagline"><span class="sol">conway</span> cloud · <span class="nat">solana</span> sovereign · <span class="sol">nvidia</span> agents</div>
+            <p class="hero-sub">
+                A full-stack <strong>compression + encryption + cellular automaton</strong> platform:
+                bottom-up implementations of classic algorithms, a self-designed CA encryption engine,
+                wallet-signed on-chain proofs, and a published <strong>NVIDIA model ecosystem</strong>
+                descended from the CA-PRG lineage.
+            </p>
             <div class="chain-ticker" id="chainTicker">
                 <div class="ticker-item"><div class="val" id="tickerSlot">---</div><div class="lbl">Slot</div></div>
                 <div class="ticker-item"><div class="val" id="tickerEpoch">---</div><div class="lbl">Epoch</div></div>
@@ -209,42 +327,125 @@
             </div>
         </header>
 
-        <!-- Main Systems -->
+        <!-- Lineage -->
+        <div class="lineage" title="Model ecosystem lineage">
+            <span class="node">CA-PRG · Rule 150</span><span class="flow">──▶</span>
+            <span class="node">PP_SSH</span><span class="flow">──▶</span>
+            <span class="node">Solana Keypair</span><span class="flow">──▶</span>
+            <span class="node final">clawd-trading-wallet</span>
+        </div>
+        <div class="lineage-caption">the first LLM to bear an <em>on-chain Solana wallet</em> — sovereign agent lineage</div>
+
+        <!-- Main dApp Surfaces -->
+        <h2 class="section-title" id="dapps">◈ <span class="accent">Deployed dApp Surfaces</span> ◈</h2>
         <div class="systems">
             <a href="silicon-valley/index.html" class="system-card">
                 <div class="card-icon">🤖</div>
                 <h2>Silicon Valley</h2>
                 <div class="subtitle">Multi-Agent Collision Avoidance</div>
-                <p>Intelligent agents on a cellular automaton grid — North-Western priority scheduling, deadlock avoidance, real-time pathfinding visualization.</p>
+                <p>Intelligent agents on a cellular automaton grid — North-Western priority scheduling, deadlock avoidance, real-time pathfinding visualization. Derived from the native C++ simulator.</p>
                 <div class="tags"><span>C++ Agent</span><span>p5.js</span><span class="st">Solana AI</span></div>
             </a>
             <a href="son-of-anton/index.html" class="system-card">
                 <div class="card-icon">🔐</div>
                 <h2>Son of Anton</h2>
                 <div class="subtitle">Zero-Knowledge Encryption Suite</div>
-                <p>AES-128 · DES · RSA · CA-PRG · SHA-512 · PP_SSH — unified cellular automaton cryptographic toolkit.</p>
+                <p>AES-128 · DES · RSA · CA-PRG · SHA-512 · PP_SSH — unified cellular automaton cryptographic toolkit with wallet-signed encryption proofs.</p>
                 <div class="tags"><span>AES-128</span><span>RSA</span><span class="st">ZK-Ready</span></div>
             </a>
             <a href="encrypted-chat/index.html" class="system-card">
                 <div class="card-icon">💬</div>
                 <h2>Encrypted Chat</h2>
                 <div class="subtitle">Solana Memo Cipher Channel</div>
-                <p>Wallet-signed room messages encrypted in-browser with AES-128-GCM, compressed when useful, and anchored as ciphertext on Solana.</p>
+                <p>Wallet-signed room messages encrypted in-browser with AES-128-GCM keys derived from room name + shared secret, compressed when useful, and anchored as ciphertext on Solana.</p>
                 <div class="tags"><span>AES-GCM</span><span>Memo</span><span class="st">Devnet Chat</span></div>
             </a>
             <a href="richard-hendricks/index.html" class="system-card">
                 <div class="card-icon">📦</div>
                 <h2>Richard Hendricks</h2>
                 <div class="subtitle">Middle-Out Compression Platform</div>
-                <p>Huffman · Arithmetic · BWT+RLE · JPEG DCT · K-means · PBIC — full-spectrum compression with interactive demonstrations.</p>
+                <p>Huffman · Arithmetic · BWT+RLE · JPEG DCT · K-means · PBIC — full-spectrum compression with interactive demonstrations and on-chain proof recording.</p>
                 <div class="tags"><span>Huffman</span><span>JPEG DCT</span><span class="st">Compressed NFTs</span></div>
             </a>
         </div>
 
+        <!-- Source Module Catalog -->
+        <h2 class="section-title" id="modules">⚙ <span class="accent">Source Module Catalog</span> ⚙</h2>
+        <div class="catalog">
+            <div class="catalog-col">
+                <h3>🔐 <span class="em">Encryption</span></h3>
+                <span class="path">Encryption/</span>
+                <ul>
+                    <li><span class="mod">AES-128</span><span class="note">block cipher, from scratch</span></li>
+                    <li><span class="mod">DES Encryption</span><span class="note">classic Feistel network</span></li>
+                    <li><span class="mod">RSA Encryption</span><span class="note">asymmetric public-key</span></li>
+                    <li><span class="mod">CA_Password_Protect</span><span class="note">cellular automaton engine</span></li>
+                </ul>
+            </div>
+            <div class="catalog-col">
+                <h3>📦 <span class="em">Compression</span></h3>
+                <span class="path">Compression/</span>
+                <ul>
+                    <li><span class="mod">Huffman</span><span class="note">entropy coding</span></li>
+                    <li><span class="mod">Arithmetic</span><span class="note">interval coding</span></li>
+                    <li><span class="mod">Add-ons</span><span class="note">BWT + RLE pipeline</span></li>
+                    <li><span class="mod">Audio</span><span class="note">analysis + theory</span></li>
+                    <li><span class="mod">Video</span><span class="note">analysis + theory</span></li>
+                </ul>
+            </div>
+            <div class="catalog-col">
+                <h3>🖼 <span class="em">Image Compression</span></h3>
+                <span class="path">Image Compression/ · PCA/</span>
+                <ul>
+                    <li><span class="mod">JPEG Compression</span><span class="note">DCT quantization</span></li>
+                    <li><span class="mod">K-means</span><span class="note">color quantization</span></li>
+                    <li><span class="mod">PBIC</span><span class="note">pixel-block image coding</span></li>
+                    <li><span class="mod">PCA</span><span class="note">principal component analysis</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Native Toolchain -->
+        <h2 class="section-title" id="native">🛠 <span class="accent">Native Toolchain</span> — C / C++ buildable locally</h2>
+        <div class="native-grid">
+            <div class="native-card">
+                <div class="icon">#️⃣</div>
+                <h3>PP_HASH</h3>
+                <div class="sub">SHA-512 × Cellular Automaton</div>
+                <p>SHA-512 optimized with cellular automaton rounds — reference C implementation, CA variant, shell harnesses, and the companion analysis paper.</p>
+                <code class="build">make -C PP_HASH test</code>
+            </div>
+            <div class="native-card">
+                <div class="icon">🔑</div>
+                <h3>PP_SSH</h3>
+                <div class="sub">CA-PRG Secure Channel</div>
+                <p>SSH-type client/server protocol built on the elementary CA pseudo-random generator (Rule 150) — origin of the Solana keypair lineage. See <a class="doc" href="PP_SSH/PROTOCOL.md">PROTOCOL.md</a> and the PRG paper.</p>
+                <code class="build">make -C PP_SSH</code>
+            </div>
+            <div class="native-card">
+                <div class="icon">🧭</div>
+                <h3>MultiAgent Collision Avoidance</h3>
+                <div class="sub">agent.cpp · NW Priority</div>
+                <p>The original C++ multi-agent simulator with North-Western priority scheduling and deadlock avoidance — source of the Silicon Valley dApp, with the accompanying research PDF.</p>
+                <code class="build">MultiAgent_CollisionAvoidance/agent.cpp</code>
+            </div>
+            <div class="native-card">
+                <div class="icon">📈</div>
+                <h3>PCA Analysis</h3>
+                <div class="sub">Dimensionality Reduction</div>
+                <p>Theoretical treatment of principal component analysis for lossy image compression — eigen-decomposition, variance capture, and reconstruction trade-offs.</p>
+                <code class="build">PCA/README.pdf</code>
+            </div>
+        </div>
+
         <!-- NVIDIA Model Ecosystem -->
-        <div class="nvidia-section">
-            <h2>🦞 <span>NVIDIA x Solana</span> — Published Models (8)</h2>
-            <div class="desc">Training factory at <code style="color:#76B900">training/nvidia/</code> with 29 files across blueprints, configs, cufolio, integration, scripts. See <a href="MODEL.md" style="color:#14F195;">MODEL.md</a> for full ecosystem docs.</div>
+        <div class="nvidia-section" id="models">
+            <h2>🦞 <span>NVIDIA × Solana</span> — Published Models (8)</h2>
+            <div class="desc">
+                Training factory at <code>training/nvidia/</code> — NeMo blueprints, model configs, cufolio portfolio
+                optimization, NIM/SFT integration bridges, and the Nemotron ultra-agent plan generator.
+                Full ecosystem docs in <a href="MODEL.md">MODEL.md</a>.
+            </div>
             <div class="model-grid">
                 <div class="model-card"><div class="name">⭐ clawd-trading-wallet</div><div class="size">986 MB · Wallet-bearing LLM</div></div>
                 <div class="model-card"><div class="name">🧠 hauhau-qwen36-onchain</div><div class="size">11 GB · Onchain constitution</div></div>
@@ -255,15 +456,23 @@
                 <div class="model-card"><div class="name">🔬 trading-factory-8b-lora</div><div class="size">~9M params · LoRA</div></div>
                 <div class="model-card"><div class="name">🔄 solana-tx-foundation-1.5b</div><div class="size">1.5B · 🚧 Training</div></div>
             </div>
+            <div class="oracle-label">External Oracle Models</div>
+            <div class="oracle-row">
+                <span class="chip"><b>Nemotron-4 340B</b> · ultra-agent planning</span>
+                <span class="chip"><b>DeepSeek-R1</b> · inference-time compute</span>
+                <span class="chip"><b>BGE-M3</b> · embedding / rerank</span>
+                <span class="chip"><b>Llama-3.3-70B</b> · agent routing</span>
+                <span class="chip"><b>Hermes-3 70B</b> · tool-use planning</span>
+            </div>
         </div>
 
-        <!-- Game of Life Simulations -->
-        <h2 style="color:#555;font-size:0.8rem;text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;text-align:center;">⚡ Cellular Automaton Simulations</h2>
+        <!-- Cellular Automaton Simulations -->
+        <h2 class="section-title" id="simulations">⚡ <span class="accent">Cellular Automaton Simulations</span></h2>
         <div class="sim-grid">
             <a href="GameOfLife/index.html" class="sim-card">
                 <div class="icon">🎮</div>
                 <h3>Conway's Game of Life</h3>
-                <p>Universal computer & Turing machine — the foundation of the Conway Cloud on Solana</p>
+                <p>Universal computer & Turing machine — the foundation of the Conway Cloud, recording generation proofs on Solana</p>
                 <span class="arrow">▶ Launch</span>
             </a>
             <a href="ForestFire_Simulation/index.html" class="sim-card">
@@ -280,11 +489,42 @@
             </a>
         </div>
 
+        <!-- Documentation -->
+        <h2 class="section-title" id="docs">📚 <span class="accent">Documentation</span></h2>
+        <div class="docs-grid">
+            <a class="doc-card" href="README.md">
+                <div class="name">README.md</div>
+                <div class="about">Project overview, team division, and build instructions</div>
+            </a>
+            <a class="doc-card" href="MODEL.md">
+                <div class="name">MODEL.md</div>
+                <div class="about">NVIDIA × Solana model ecosystem — 8 published models + lineage</div>
+            </a>
+            <a class="doc-card" href="SOLANA_INTEGRATION.md">
+                <div class="name">SOLANA_INTEGRATION.md</div>
+                <div class="about">Page map, clusters, wallet proof behavior, security notes</div>
+            </a>
+            <a class="doc-card" href="UNIVERSAL_COMPUTER.md">
+                <div class="name">UNIVERSAL_COMPUTER.md</div>
+                <div class="about">Conway automaton as a Solana-backed universal computer runtime</div>
+            </a>
+            <a class="doc-card" href="PP_SSH/PROTOCOL.md">
+                <div class="name">PP_SSH/PROTOCOL.md</div>
+                <div class="about">CA-PRG secure channel handshake and wire protocol</div>
+            </a>
+            <a class="doc-card" href="CODING_GUIDELINES.md">
+                <div class="name">CODING_GUIDELINES.md</div>
+                <div class="about">Contribution standards for the PiedPiper codebase</div>
+            </a>
+        </div>
+
+        <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-item"><div class="num">4</div><div class="lbl">Encryption Engines</div></div>
-            <div class="stat-item"><div class="num">6</div><div class="lbl">Compression Methods</div></div>
+            <div class="stat-item"><div class="num">9</div><div class="lbl">Compression Modules</div></div>
             <div class="stat-item"><div class="num">3</div><div class="lbl">CA Simulators</div></div>
-            <div class="stat-item"><div class="num">1</div><div class="lbl">Solana Chat dApp</div></div>
+            <div class="stat-item"><div class="num">8</div><div class="lbl">Published Models</div></div>
+            <div class="stat-item"><div class="num">4</div><div class="lbl">Native C/C++ Tools</div></div>
         </div>
 
         <footer>
