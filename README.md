@@ -14,6 +14,12 @@ This is a project extension for the Algorithms course by team `Pied Piper`. It's
 5. Implement from scratch data compression and binary file compression algorithms like Huffman and Arithmetic Compression.
 6. Produce analysis papers for the concepts learnt and implemented.
 
+# Solana Integration
+
+The web hub and interactive modules include wallet connection, live Solana RPC status, and wallet-signed Memo proofs. The shared integration lives in `shared/solana-integration.js` and defaults to devnet.
+
+See `SOLANA_INTEGRATION.md` for the page map, supported clusters, proof behavior, and security notes.
+
 # Team Division for Project Topics 
 
 # Encryption 

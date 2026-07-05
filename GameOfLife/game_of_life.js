@@ -6,11 +6,12 @@ const res=5
 var gen = []
 var next_gen = []
 var grid;
+var generation = 0;
 
 function make2DArray(r, c) {
-    let arr = new Array(rows);
-    for (let i = 0; i < rows; i++) {
-        arr[i] = new Array(cols);
+    let arr = new Array(r);
+    for (let i = 0; i < r; i++) {
+        arr[i] = new Array(c).fill(0);
     }
     return arr;
 }
@@ -98,4 +99,46 @@ function draw() {
         }
     }
     grid = update();
+    generation++;
+}
+
+function getConwaySnapshot() {
+    let visibleRows = Math.floor(rows / res);
+    let visibleCols = Math.floor(cols / res);
+    let cells = [];
+    let alive = 0;
+
+    if (grid) {
+        for (let x = 0; x < visibleRows; x++) {
+            for (let y = 0; y < visibleCols; y++) {
+                let value = grid[x][y] || 0;
+                cells.push(value);
+                if (value === 1) alive++;
+            }
+        }
+    }
+
+    return {
+        page: 'game-of-life',
+        generation: generation,
+        rows: rows,
+        cols: cols,
+        resolution: res,
+        visibleRows: visibleRows,
+        visibleCols: visibleCols,
+        aliveCells: alive,
+        cells: cells.join(''),
+    };
+}
+
+function recordConwayProof() {
+    return window.PiedPiperSolana.recordProof({
+        module: 'game-of-life',
+        kind: 'cellular-automaton-proof',
+        label: 'generation-' + generation,
+        statusElement: '#conwayProofStatus',
+        payload: getConwaySnapshot,
+    }).catch((err) => {
+        document.getElementById('conwayProofStatus').textContent = err.message || String(err);
+    });
 }

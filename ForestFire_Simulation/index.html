@@ -7,14 +7,72 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>Forest Fire Simulation</title>
+	<link rel="icon" href="../favicon.svg" type="image/svg+xml">
 
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/p5@1.1.4/lib/p5.min.js"></script>
-	<script src="libraries/p5.js"></script>
-	<script src="libraries/p5.dom.js"></script>
-	<script type="text/javascript" src="./game_of_life.js"></script>
+	<link rel="stylesheet" href="../shared/solana-integration.css">
+	<style>
+		body {
+			margin: 0;
+			background: #090b0f;
+			color: #e8edf5;
+			font-family: Arial, sans-serif;
+		}
+
+		.sim-toolbar {
+			position: relative;
+			z-index: 2;
+			display: grid;
+			gap: 14px;
+			max-width: 980px;
+			padding: 18px;
+		}
+
+		.sim-toolbar a {
+			color: #64748b;
+			font-family: monospace;
+			font-size: 0.78rem;
+			text-decoration: none;
+		}
+
+		.sim-toolbar h1 {
+			margin: 0;
+			font-size: 1.4rem;
+		}
+
+		.sim-toolbar p {
+			max-width: 720px;
+			margin: 0;
+			color: #7c8798;
+			font-size: 0.9rem;
+			line-height: 1.45;
+		}
+
+		canvas {
+			display: block;
+			margin: 0 18px 18px;
+			max-width: calc(100vw - 36px);
+			height: auto !important;
+			border: 1px solid rgba(255, 120, 45, 0.24);
+			background: #fff;
+		}
+	</style>
 </head>
 
 <body>
+	<section class="sim-toolbar">
+		<a href="../index.html">PiedPiper Hub</a>
+		<h1>Forest Fire Simulation</h1>
+		<p>Cellular automaton fire spread model with wallet-signed Solana Memo proofs for state snapshots.</p>
+		<div data-solana-mount></div>
+		<div class="pp-solana-proof-row">
+			<button class="pp-solana-proof-button" type="button" onclick="recordForestFireProof()">Record State Proof</button>
+			<span class="pp-solana-proof-status" id="forestProofStatus"></span>
+		</div>
+	</section>
+	<script src="https://unpkg.com/@solana/web3.js@1/lib/index.iife.min.js"></script>
+	<script src="../shared/solana-integration.js" data-theme="red"></script>
+	<script type="text/javascript" src="./game_of_life.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,133 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e6]:
+      - strong [ref=e7]: Solana
+      - text: "Devnet · Slot: ---"
+    - generic [ref=e8]:
+      - combobox "Solana cluster" [ref=e9]:
+        - option "Devnet" [selected]
+        - option "Mainnet"
+        - option "Testnet"
+        - option "Localnet"
+      - generic [ref=e10]: Wallet not connected
+      - button "Connect Wallet" [ref=e11] [cursor=pointer]
+  - banner [ref=e12]:
+    - generic [ref=e13]: ✦ S O L A N A · N A T I V E ✦
+    - generic [ref=e14]: PIED PIPER
+    - generic [ref=e15]: conway cloud · solana sovereign · nvidia agents
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - generic [ref=e18]: "---"
+        - generic [ref=e19]: Slot
+      - generic [ref=e20]:
+        - generic [ref=e21]: "---"
+        - generic [ref=e22]: Epoch
+      - generic [ref=e23]:
+        - generic [ref=e24]: "---"
+        - generic [ref=e25]: Finalized
+      - generic [ref=e26]:
+        - generic [ref=e27]: "---"
+        - generic [ref=e28]: TPS
+    - button "Record Hub Proof" [ref=e30] [cursor=pointer]
+  - generic [ref=e31]:
+    - link "🤖 Silicon Valley Multi-Agent Collision Avoidance Intelligent agents on a cellular automaton grid — North-Western priority scheduling, deadlock avoidance, real-time pathfinding visualization. C++ Agent p5.js Solana AI" [ref=e32] [cursor=pointer]:
+      - /url: silicon-valley/index.html
+      - generic [ref=e33]: 🤖
+      - heading "Silicon Valley" [level=2] [ref=e34]
+      - generic [ref=e35]: Multi-Agent Collision Avoidance
+      - paragraph [ref=e36]: Intelligent agents on a cellular automaton grid — North-Western priority scheduling, deadlock avoidance, real-time pathfinding visualization.
+      - generic [ref=e37]:
+        - generic [ref=e38]: C++ Agent
+        - generic [ref=e39]: p5.js
+        - generic [ref=e40]: Solana AI
+    - link "🔐 Son of Anton Zero-Knowledge Encryption Suite AES-128 · DES · RSA · CA-PRG · SHA-512 · PP_SSH — unified cellular automaton cryptographic toolkit. AES-128 RSA ZK-Ready" [ref=e41] [cursor=pointer]:
+      - /url: son-of-anton/index.html
+      - generic [ref=e42]: 🔐
+      - heading "Son of Anton" [level=2] [ref=e43]
+      - generic [ref=e44]: Zero-Knowledge Encryption Suite
+      - paragraph [ref=e45]: AES-128 · DES · RSA · CA-PRG · SHA-512 · PP_SSH — unified cellular automaton cryptographic toolkit.
+      - generic [ref=e46]:
+        - generic [ref=e47]: AES-128
+        - generic [ref=e48]: RSA
+        - generic [ref=e49]: ZK-Ready
+    - link "📦 Richard Hendricks Middle-Out Compression Platform Huffman · Arithmetic · BWT+RLE · JPEG DCT · K-means · PBIC — full-spectrum compression with interactive demonstrations. Huffman JPEG DCT Compressed NFTs" [ref=e50] [cursor=pointer]:
+      - /url: richard-hendricks/index.html
+      - generic [ref=e51]: 📦
+      - heading "Richard Hendricks" [level=2] [ref=e52]
+      - generic [ref=e53]: Middle-Out Compression Platform
+      - paragraph [ref=e54]: Huffman · Arithmetic · BWT+RLE · JPEG DCT · K-means · PBIC — full-spectrum compression with interactive demonstrations.
+      - generic [ref=e55]:
+        - generic [ref=e56]: Huffman
+        - generic [ref=e57]: JPEG DCT
+        - generic [ref=e58]: Compressed NFTs
+  - generic [ref=e59]:
+    - heading "🦞 NVIDIA x Solana — Published Models (8)" [level=2] [ref=e60]
+    - generic [ref=e61]:
+      - text: Training factory at
+      - code [ref=e62]: training/nvidia/
+      - text: with 29 files across blueprints, configs, cufolio, integration, scripts. See
+      - link "MODEL.md" [ref=e63] [cursor=pointer]:
+        - /url: MODEL.md
+      - text: for full ecosystem docs.
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - generic [ref=e66]: ⭐ clawd-trading-wallet
+        - generic [ref=e67]: 986 MB · Wallet-bearing LLM
+      - generic [ref=e68]:
+        - generic [ref=e69]: 🧠 hauhau-qwen36-onchain
+        - generic [ref=e70]: 11 GB · Onchain constitution
+      - generic [ref=e71]:
+        - generic [ref=e72]: 🧠 hauhau-qwen36-uncensored
+        - generic [ref=e73]: 11 GB · Uncensored
+      - generic [ref=e74]:
+        - generic [ref=e75]: 🦞 core-ai-clawd-1.5b
+        - generic [ref=e76]: 986 MB · Base agent
+      - generic [ref=e77]:
+        - generic [ref=e78]: 🦞 core-ai-clawd-finetuned
+        - generic [ref=e79]: 4.9 GB · Fine-tuned
+      - generic [ref=e80]:
+        - generic [ref=e81]: 🔬 clawd-core-1.5b-lora
+        - generic [ref=e82]: ~9M params · LoRA
+      - generic [ref=e83]:
+        - generic [ref=e84]: 🔬 trading-factory-8b-lora
+        - generic [ref=e85]: ~9M params · LoRA
+      - generic [ref=e86]:
+        - generic [ref=e87]: 🔄 solana-tx-foundation-1.5b
+        - generic [ref=e88]: 1.5B · 🚧 Training
+  - heading "⚡ Cellular Automaton Simulations" [level=2] [ref=e89]
+  - generic [ref=e90]:
+    - link "🎮 Conway's Game of Life Universal computer & Turing machine — the foundation of the Conway Cloud on Solana ▶ Launch" [ref=e91] [cursor=pointer]:
+      - /url: GameOfLife/index.html
+      - generic [ref=e92]: 🎮
+      - heading "Conway's Game of Life" [level=3] [ref=e93]
+      - paragraph [ref=e94]: Universal computer & Turing machine — the foundation of the Conway Cloud on Solana
+      - generic [ref=e95]: ▶ Launch
+    - link "🔥 Forest Fire Simulation CA fire spread model with regeneration and cellular automaton dynamics ▶ Launch" [ref=e96] [cursor=pointer]:
+      - /url: ForestFire_Simulation/index.html
+      - generic [ref=e97]: 🔥
+      - heading "Forest Fire Simulation" [level=3] [ref=e98]
+      - paragraph [ref=e99]: CA fire spread model with regeneration and cellular automaton dynamics
+      - generic [ref=e100]: ▶ Launch
+    - link "📂 GitHub Repository C · C++ · Python · p5.js · YAML · 20+ modules · 10+ analysis papers → View" [ref=e101] [cursor=pointer]:
+      - /url: https://github.com/Solizardking/PiedPiper-master
+      - generic [ref=e102]: 📂
+      - heading "GitHub Repository" [level=3] [ref=e103]
+      - paragraph [ref=e104]: C · C++ · Python · p5.js · YAML · 20+ modules · 10+ analysis papers
+      - generic [ref=e105]: → View
+  - generic [ref=e106]:
+    - generic [ref=e107]:
+      - generic [ref=e108]: "4"
+      - generic [ref=e109]: Encryption Engines
+    - generic [ref=e110]:
+      - generic [ref=e111]: "6"
+      - generic [ref=e112]: Compression Methods
+    - generic [ref=e113]:
+      - generic [ref=e114]: "3"
+      - generic [ref=e115]: CA Simulators
+    - generic [ref=e116]:
+      - generic [ref=e117]: "8"
+      - generic [ref=e118]: NVIDIA Models
+  - contentinfo [ref=e119]:
+    - link "PiedPiper · Solana Native AI · Solizardking" [ref=e120] [cursor=pointer]:
+      - /url: https://github.com/Solizardking/PiedPiper-master
+    - text: Varul Srivastava · Ashwin Mittal · Shivang Gupta · Akshett Rai Jindal · Keshav Bansal · Zishan Kazi

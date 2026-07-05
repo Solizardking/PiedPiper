@@ -7,14 +7,15 @@ var gen = []
 var gen_time;
 var next_gen = []
 var grid;
+var generation = 0;
 
 var code = [0, 0.25, 1, 0];
 
 
 function make2DArray(r, c) {
-    let arr = new Array(rows);
-    for (let i = 0; i < rows; i++) {
-        arr[i] = new Array(cols);
+    let arr = new Array(r);
+    for (let i = 0; i < r; i++) {
+        arr[i] = new Array(c).fill(0);
     }
     return arr;
 }
@@ -29,7 +30,6 @@ function update() {
                     continue;
                 }
                 else if (grid[i][j] == 2) {
-                    console.log(gen_time[i][j]);
                     gen_time[i][j]--;
                     if (gen_time[i][j] == 0) {
                         next_grid[i][j] = 3;    // burnt
@@ -159,4 +159,49 @@ function draw() {
         }
     }
     grid = update();
+    generation++;
+}
+
+function getForestFireSnapshot() {
+    let visibleRows = Math.floor(rows / res);
+    let visibleCols = Math.floor(cols / res);
+    let cells = [];
+    let counts = { empty: 0, tree: 0, burning: 0, burnt: 0 };
+
+    if (grid) {
+        for (let x = 0; x < visibleRows; x++) {
+            for (let y = 0; y < visibleCols; y++) {
+                let value = grid[x][y] || 0;
+                cells.push(value);
+                if (value === 0) counts.empty++;
+                if (value === 1) counts.tree++;
+                if (value === 2) counts.burning++;
+                if (value === 3) counts.burnt++;
+            }
+        }
+    }
+
+    return {
+        page: 'forest-fire-simulation',
+        generation: generation,
+        rows: rows,
+        cols: cols,
+        resolution: res,
+        visibleRows: visibleRows,
+        visibleCols: visibleCols,
+        counts: counts,
+        cells: cells.join(''),
+    };
+}
+
+function recordForestFireProof() {
+    return window.PiedPiperSolana.recordProof({
+        module: 'forest-fire-simulation',
+        kind: 'cellular-automaton-proof',
+        label: 'generation-' + generation,
+        statusElement: '#forestProofStatus',
+        payload: getForestFireSnapshot,
+    }).catch((err) => {
+        document.getElementById('forestProofStatus').textContent = err.message || String(err);
+    });
 }
