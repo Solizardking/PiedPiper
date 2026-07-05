@@ -18,7 +18,20 @@ This is a project extension for the Algorithms course by team `Pied Piper`. It's
 
 The web hub and interactive modules include wallet connection, live Solana RPC status, and wallet-signed Memo proofs. The shared integration lives in `shared/solana-integration.js` and defaults to devnet.
 
+`encrypted-chat/index.html` adds a browser-only encrypted room chat that derives AES-128-GCM keys from a room name and shared secret, then writes ciphertext envelopes to the Solana Memo program.
+
 See `SOLANA_INTEGRATION.md` for the page map, supported clusters, proof behavior, and security notes.
+
+## Universal Computer Runtime
+
+`GameOfLife/index.html` is the Solana-backed universal-computer surface. The Conway automaton runs in the browser, while `shared/solana-integration.js` records wallet-signed Solana Memo proofs for selected generations. The companion notes live in `UNIVERSAL_COMPUTER.md`.
+
+Native components are buildable locally:
+
+```bash
+make -C PP_HASH test
+make -C PP_SSH
+```
 
 # Team Division for Project Topics 
 

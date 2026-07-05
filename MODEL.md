@@ -47,3 +47,11 @@ CA-PRG (Rule 150) → PP_SSH → Solana Keypair → clawd-trading-wallet
 ```
 
 This makes `clawd-trading-wallet` the **first LLM that can bear an on-chain Solana wallet** — a breakthrough in sovereign AI agents.
+
+## Deployed dApp Surface
+
+- `index.html`: Solana-native hub for the compression, encryption, cellular automaton, and model ecosystem.
+- `encrypted-chat/index.html`: encrypted Solana chat using browser-derived AES-128-GCM room keys and wallet-signed Memo ciphertext.
+- `silicon-valley/index.html`: multi-agent collision-avoidance simulator derived from `MultiAgent_CollisionAvoidance/agent.cpp`, with Solana state proofs.
+- `son-of-anton/index.html`: AES, DES, RSA, CA-PRG, SHA-512, and PP_SSH encryption proof surface.
+- `richard-hendricks/index.html`: compression proof surface for Huffman, Arithmetic, BWT/RLE, JPEG, K-means, and PBIC modules.

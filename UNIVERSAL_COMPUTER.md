@@ -10,6 +10,17 @@ In 1982, John Conway proved in Winning Ways that the Game of Life has a (finite)
 
 > Constructing finite-universal computer using conway's game of life is relatively simple. It uses glider's logic along with sliding memory implementation. But practical realization of such logic is difficult.
 
+## Solana Computer Surface
+
+In this repository, the practical browser surface for the universal-computer model is `GameOfLife/index.html`.
+
+- `GameOfLife/game_of_life.js` runs the Conway cellular automaton state.
+- `shared/solana-integration.js` provides cluster selection, wallet connection, Solana RPC status, SHA-256 hashing, and Memo transaction submission.
+- The "Record State Proof" action hashes the current cellular automaton grid and writes a wallet-signed Solana Memo proof containing the generation label and state hash.
+- The Solana proof does not try to put the whole universal computer on-chain. It anchors reproducible state commitments on Solana while the browser runs the cellular automaton computation.
+
+This makes the module a Solana-backed universal computer demo: computation runs locally, and verifiable state checkpoints are signed and recorded through the Solana Memo program.
+
 ## Life as a Universal Turing Machine
 
 Like any other CA, Life can be considered a computational device: an initial configuration of the automaton can encode an input string. One can let the system run and, at some point, read the current configuration as the result of the computation performed so far, decoding it into an output string. But exactly what can Life compute? It turns out that Life can compute everything a universal Turing machine can and therefore, taking on board Turing’s Thesis, function as a general purpose computer: a suitable selection of initial conditions can ensure that the system carry out arbitrary algorithmic procedures. 
@@ -27,4 +38,3 @@ Since the Game of Life consists a pattern equivalent to universal turing machine
 `RESULTS` :     
 1. It thus follows that any Deciding algorithm D doesnot exist.
 2. It also follows that some patterns exist that remain chaotic forever. If this were not the case, one could progress the game sequentially until a non-chaotic pattern emerged, then compute whether a later pattern was going to appear. 
-
