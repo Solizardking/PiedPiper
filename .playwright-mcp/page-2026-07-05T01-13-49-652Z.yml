@@ -1,0 +1,26 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "PiedPiper Hub" [ref=e3] [cursor=pointer]:
+      - /url: ../index.html
+    - heading "Conway's Game of Life" [level=1] [ref=e4]
+    - paragraph [ref=e5]: Live cellular automaton state with wallet-signed Solana Memo proofs for reproducible snapshots.
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - strong [ref=e11]: Solana
+          - generic [ref=e12]: Devnet
+        - generic [ref=e13]:
+          - generic [ref=e14]: Slot --
+          - generic [ref=e15]: Epoch --
+          - generic [ref=e16]: Finalized --
+          - generic [ref=e17]: TPS --
+          - generic [ref=e18]: Wallet not connected
+      - generic [ref=e19]:
+        - combobox "Solana cluster" [ref=e20]:
+          - option "Devnet" [selected]
+          - option "Mainnet"
+          - option "Testnet"
+          - option "Localnet"
+        - button "Connect Wallet" [ref=e21] [cursor=pointer]
+    - button "Record State Proof" [ref=e23] [cursor=pointer]
+  - main [ref=e24]

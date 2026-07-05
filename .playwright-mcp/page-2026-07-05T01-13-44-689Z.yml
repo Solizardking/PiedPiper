@@ -1,0 +1,58 @@
+- generic [active]:
+  - generic [ref=e1]:
+    - link "← PiedPiper Hub" [ref=e2] [cursor=pointer]:
+      - /url: ../index.html
+    - heading "Silicon Valley" [level=1] [ref=e3]
+    - generic [ref=e4]: Multi-Agent Collision Avoidance
+    - paragraph [ref=e5]: Intelligent agents navigate complex obstacle environments using cellular automaton pathfinding with North-Western priority scheduling and deadlock avoidance.
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - strong [ref=e11]: Solana
+          - generic [ref=e12]: Devnet
+        - generic [ref=e13]:
+          - generic [ref=e14]: Slot --
+          - generic [ref=e15]: Epoch --
+          - generic [ref=e16]: Finalized --
+          - generic [ref=e17]: TPS --
+          - generic [ref=e18]: Wallet not connected
+      - generic [ref=e19]:
+        - combobox "Solana cluster" [ref=e20]:
+          - option "Devnet" [selected]
+          - option "Mainnet"
+          - option "Testnet"
+          - option "Localnet"
+        - button "Connect Wallet" [ref=e21] [cursor=pointer]
+    - generic [ref=e22]:
+      - generic [ref=e23]: Number of Agents
+      - generic [ref=e24]:
+        - slider [ref=e25]: "5"
+        - generic [ref=e26]: "5"
+    - generic [ref=e27]:
+      - generic [ref=e28]: Obstacle Density (%)
+      - generic [ref=e29]:
+        - slider [ref=e30]: "20"
+        - generic [ref=e31]: "20"
+    - generic [ref=e32]:
+      - generic [ref=e33]: Speed (frames per tick)
+      - generic [ref=e34]:
+        - slider [ref=e35]: "5"
+        - generic [ref=e36]: "5"
+    - button "🌀 Randomize Obstacles" [ref=e37] [cursor=pointer]
+    - button "🔄 Reset Agents" [ref=e38] [cursor=pointer]
+    - button "✕ Clear All" [ref=e39] [cursor=pointer]
+    - button "Record Simulation Proof" [ref=e41] [cursor=pointer]
+    - generic [ref=e43]:
+      - generic [ref=e44]:
+        - generic [ref=e45]: Agents
+        - generic [ref=e46]: "0"
+      - generic [ref=e47]:
+        - generic [ref=e48]: Arrived
+        - generic [ref=e49]: "0"
+      - generic [ref=e50]:
+        - generic [ref=e51]: Ticks
+        - generic [ref=e52]: "0"
+      - generic [ref=e53]:
+        - generic [ref=e54]: Deadlocks
+        - generic [ref=e55]: "0"
+  - main

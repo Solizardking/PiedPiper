@@ -1,0 +1,58 @@
+- generic [ref=e2]:
+  - link "← PiedPiper Hub" [ref=e3] [cursor=pointer]:
+    - /url: ../index.html
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - strong [ref=e9]: Solana
+        - generic [ref=e10]: Devnet
+      - generic [ref=e11]:
+        - generic [ref=e12]: Slot --
+        - generic [ref=e13]: Epoch --
+        - generic [ref=e14]: Finalized --
+        - generic [ref=e15]: TPS --
+        - generic [ref=e16]: Wallet not connected
+    - generic [ref=e17]:
+      - combobox "Solana cluster" [ref=e18]:
+        - option "Devnet" [selected]
+        - option "Mainnet"
+        - option "Testnet"
+        - option "Localnet"
+      - button "Connect Wallet" [ref=e19] [cursor=pointer]
+  - banner [ref=e20]:
+    - generic [ref=e21]: SON OF ANTON
+    - generic [ref=e22]: Integrated Encryption Suite · Cellular Automaton Security
+  - generic [ref=e23]:
+    - button "AES-128" [ref=e24] [cursor=pointer]
+    - button "DES" [ref=e25] [cursor=pointer]
+    - button "RSA" [ref=e26] [cursor=pointer]
+    - button "CA-Password" [ref=e27] [cursor=pointer]
+    - button "SHA-512" [ref=e28] [cursor=pointer]
+    - button "PP_SSH" [ref=e29] [cursor=pointer]
+    - button "Overview" [ref=e30] [cursor=pointer]
+  - button "Record Encryption Proof" [ref=e32] [cursor=pointer]
+  - generic [ref=e33]:
+    - heading "🔐 Son of Anton — Encryption Suite" [level=2] [ref=e34]
+    - generic [ref=e35]: Named after Anton/Gavin Belson's encryption system from Silicon Valley. This suite integrates all cryptographic modules from the PiedPiper project into a unified web toolkit.
+    - generic [ref=e36]:
+      - generic [ref=e37]:
+        - strong [ref=e38]: AES-128
+        - text: Advanced Encryption Standard with 128-bit keys. SubBytes, ShiftRows, MixColumns, AddRoundKey — 10 rounds of substitution-permutation network.
+      - generic [ref=e39]:
+        - strong [ref=e40]: DES
+        - text: Data Encryption Standard. Feistel network with 16 rounds, 56-bit key, S-box substitution, permutation.
+      - generic [ref=e41]:
+        - strong [ref=e42]: RSA
+        - text: Rivest-Shamir-Adleman public-key cryptosystem. Modular exponentiation, prime factorization security.
+      - generic [ref=e43]:
+        - strong [ref=e44]: CA-Password
+        - text: Cellular Automaton PRNG encryption using Wolfram's Rule 150. XOR-based stream cipher with deadlock-free random generation.
+      - generic [ref=e45]:
+        - strong [ref=e46]: SHA-512
+        - text: Secure Hash Algorithm 512-bit. Merkle-Damgård construction with 80 rounds of compression.
+      - generic [ref=e47]:
+        - strong [ref=e48]: PP_SSH
+        - text: Cellular Automaton encrypted SSH protocol. Encrypted shell with CA-PRG keystream, Ack protocol, multi-client server.
+    - generic [ref=e49]:
+      - paragraph [ref=e50]: ⚡ Built on the cryptographic foundations of Varul Srivastava, Ashwin Mittal, Shivang Gupta, Akshett Rai Jindal, Keshav Bansal, Zishan Kazi
+      - paragraph [ref=e51]: "Source implementations: Encryption/AES-128 · Encryption/DES Encryption · Encryption/RSA Encryption · Encryption/CA_Password_Protect · PP_HASH · PP_SSH"
